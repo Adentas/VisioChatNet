@@ -21,25 +21,25 @@ def upload_predict():
     if request.method == 'POST':
         uploaded_file = request.files.get('file')
         if uploaded_file is not None:
-            # Обробка зображення та отримання передбачень від моделі
+            # Processing the image and getting predictions from the model
             processed_image = preprocess_image(uploaded_file)
             prediction = model.predict(processed_image)[0]
 
-            # Отримання індексів та ймовірностей топ-3 класів
+            # Obtaining indices and probabilities of the top 3 classes
             top3_indices = np.argsort(prediction)[-3:][::-1]
             top3_probabilities = prediction[top3_indices]
 
-            # Назви класів
+            # Classes names
             classes = ['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']
 
-            # Додаємо найбільш вірогідний клас з його ймовірністю
+            # Adding the most likely class with its probability
             most_likely_class_index = top3_indices[0]
             most_likely_class_probability = top3_probabilities[0] * 100
             response_message = f"I think it's a - {classes[most_likely_class_index]} with a probability {most_likely_class_probability:.2f}%.\n\n"
 
-            # Додатково виводимо інші класи та їх ймовірності
+            # Additionally, we display other classes and their probabilities
             response_message += "Also, I have other options:\n"
-            for i, index in enumerate(top3_indices[1:], start=1):  # Пропускаємо найбільш вірогідний клас
+            for i, index in enumerate(top3_indices[1:], start=1):
                 class_probability = top3_probabilities[i] * 100
                 response_message += f"{i}: {classes[index]} with a probability {class_probability:.2f}%\n"
 
@@ -48,4 +48,4 @@ def upload_predict():
     return render_template('base.html')
 
 if __name__ == '__main__':
-    app.run(debug=True, host='127.0.0.1', port=5002)
+    app.run(debug=True, host='127.0.0.1', port=5000)
