@@ -1,14 +1,18 @@
 [tool.poetry]
-name = "visiochatnet"
-version = "0.1.0"
-description = "team project"
-authors = ["Adentas <adentaspro@gmail.com>"]
+name = "flask-visionet"
+version = "0.1"
+description = ""
+authors = ["Your Name <you@example.com>"]
+license = "Mit License"
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.10"
-streamlit = "^1.31.1"
-scikit-learn = "^1.4.1.post1"
+python = ">=3.10"
+flask = "^3.0.2"
+sqlalchemy = "^2.0.28"
+pillow = "^10.2.0"
+tensorflow = "^2.16.1"
+python-dotenv = "^1.0.1"
 
 
 [build-system]
