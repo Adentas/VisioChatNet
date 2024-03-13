@@ -1,3 +1,6 @@
+from sqlalchemy import text
+from src.database.db import SessionLocal
+
 from flask import Flask, request, jsonify, render_template
 from PIL import Image
 import numpy as np
@@ -46,6 +49,19 @@ def upload_predict():
             return jsonify({'result': response_message})
         
     return render_template('base.html')
+
+@app.route("/healthchecker")
+def healthchecker():
+    try:
+        db = SessionLocal()
+        result = db.execute(text("SELECT 1")).fetchone()
+        db.close() 
+        if result is None:
+            return jsonify({"detail": "Database is not configured correctly"}), 500
+        return jsonify({"message": "Welcome to Flask! Database connected correctly"})
+    except Exception as e:
+        return jsonify({"detail": f"Error connecting to the database: {str(e)}"}), 500
+
 
 if __name__ == '__main__':
     app.run(debug=True, host='127.0.0.1', port=5000)
