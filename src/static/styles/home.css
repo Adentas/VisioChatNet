@@ -164,16 +164,72 @@ width: 362px; /* Розмір промо логотипу */
   font-family: 'Open Sans', sans-serif;
   font-weight: 700; /* або 'bold' */
   align-self: end;
+  align-items: end; /* Вирівнюємо всі елементи по вертикалі */
   display: flex;
   margin-top: 37px;
   justify-content: space-between;
   gap: 20px;
+  color: inherit; /* Використовуємо колір, успадкований від батьківського елемента */
+  text-decoration: none; /* Видаляємо підкреслення */
+}
+
+.menu-options > div {
+  margin: 0 10px; /* Додаємо невеликий відступ між елементами */
+  height: 100%; /* Встановлюємо однакову висоту для всіх елементів */
+  
 }
 
 @media (max-width: 991px) {
   .menu-options {
       white-space: initial;
   }
+}
+.sign-options {
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 700; /* або 'bold' */
+  align-self: end;
+  align-items: center; /* Вирівнюємо всі елементи по вертикалі */
+  display: flex;
+  margin-top: 37px;
+  justify-content: space-between;
+  gap: 20px;
+  
+}
+
+.sign-options > div {
+  margin: 0 0px; /* Додаємо невеликий відступ між елементами */
+  height: 100%; /* Встановлюємо однакову висоту для всіх елементів */
+
+}
+
+@media (max-width: 991px) {
+  .sign-options {
+      white-space: initial;
+      
+  }
+}
+
+.sign-options .Sign-Up,
+.sign-options .Login {
+  text-decoration: none; /* Видаляємо підкреслення */
+}
+
+
+@media (max-width: 991px) {
+  .sign-options .Sign-Up,
+  .sign-options .Login {
+    text-decoration: none; /* Видаляємо підкреслення */
+  }
+}
+
+.Contacts,
+.About {
+  cursor: pointer;
+}
+
+a.Home {
+  color: inherit; /* Використовуємо колір, успадкований від батьківського елемента */
+  text-decoration: none; /* Видаляємо підкреслення */
 }
 
 
@@ -276,6 +332,7 @@ width: 362px; /* Розмір промо логотипу */
   text-align: center;
   padding: 24px 60px;
   font: 400 17px/1 'Open Sans', sans-serif;
+  cursor: pointer; /* Змінюємо форму курсору на палець */
 }
 
 @media (max-width: 991px) {
@@ -322,4 +379,19 @@ width: 362px; /* Розмір промо логотипу */
 }
 
 
+.Sign-Up {
+  padding: 10px 20px;
+  border-radius: 20px;
+  background-color: #3498db;
+  color: #fff;
+  cursor: pointer;
+}
 
+.Login {
+  padding: 10px 20px;
+  border-radius: 20px;
+  background-color: #50C878;
+  /* background-color: #65dbb8; */
+  color: #fff;
+  cursor: pointer;
+}

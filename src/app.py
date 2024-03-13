@@ -18,6 +18,9 @@ def preprocess_image(uploaded_file):
     img_array = np.expand_dims(img_array, axis=0)
     return img_array
 
+@app.route('/')
+def home():
+    return render_template("home/home.html")
 
 @app.route('/upload_predict', methods=['POST', 'GET'])
 def upload_predict():
