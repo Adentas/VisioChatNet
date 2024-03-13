@@ -1,0 +1,325 @@
+/* Styles for footer */
+.footer-container {
+  border-radius: 30px;
+  border: solid rgba(0, 0, 0, 1);
+  border-width: 3px 0 3px 0;
+  background-color: #f0f5ff;
+  display: flex;
+  width: 100%;
+  height: auto; /* Замінено фіксовану висоту на автоматичну */
+  justify-content: center;
+  align-items: center;
+  padding: 80px 60px;
+  box-sizing: border-box; /* Враховуємо padding у розрахунках ширини */
+}
+
+@media (max-width: 991px) {
+  .footer-container {
+    max-width: 100%;
+    padding: 0 20px;
+  }
+}
+
+.footer-content {
+  display: flex;
+  width: 1000px;
+  max-width: 100%;
+  justify-content: space-between;
+  gap: 20px;
+  margin: 95px 0 26px;
+}
+
+@media (max-width: 991px) {
+  .footer-content {
+    flex-wrap: wrap;
+    margin-top: 40px;
+  }
+}
+
+.brand-section,
+.collaborate-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.brand-name,
+.collaborate-call {
+  text-align: center;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  font-family: Nunito, sans-serif;
+  font-weight: 900;
+  font-size: 16px;
+}
+
+.navigation,
+.github-links {
+    display: flex;
+    margin-top: 17px;
+    gap: 13px;
+    font-size: 15px;
+    font-weight: 400;
+    letter-spacing: 0.75px;
+    line-height: 140%;
+}
+
+@media (max-width: 991px) {
+    .navigation,
+    .github-links {
+        flex-direction: column;
+        gap: 20px;
+    }
+}
+
+.nav-item,
+.github-account {
+    font-family: Nunito, sans-serif;
+}
+
+.footer-container .navigation a,
+.footer-container .github-links a {
+  text-decoration: none; /* Відключаємо звичайне підкреслення посилань */
+  color: inherit; /* Застосовуємо колір тексту, що успадковується від батьківського елемента */
+  font-family: inherit; /* Застосовуємо шрифт, що успадковується від батьківського елемента */
+  font-size: inherit; /* Застосовуємо розмір шрифту, що успадковується від батьківського елемента */
+  font-weight: inherit; /* Застосовуємо жирність шрифту, що успадковується від батьківського елемента */
+  /* Інші необхідні стилі, які вам потрібні */
+}
+
+.page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 25px 60px 80px;
+  background: linear-gradient(to right, rgba(59, 150, 209, 0.3) 0%, rgba(101, 219, 184, 0.1) calc(50% - 580px), rgba(255, 255, 255, 0.8) calc(50% - 580px), rgba(255, 255, 255, 0.8) calc(50% + 580px), rgba(101, 219, 184, 0.1) calc(100% - 580px), rgba(59, 150, 209, 0.3) 100%);
+  backdrop-filter: blur(10px);
+}
+
+@media (max-width: 1140px) {
+  .page {
+      max-width: 100%;
+      padding: 25px 20px 80px;
+  }
+}
+
+
+
+@media (max-width: 1140px) {
+  .page {
+    max-width: 100%;
+    padding: 25px 20px 80px;
+  }
+}
+
+
+
+.navigation-container {
+  display: flex;
+  margin-bottom: 90px;
+  width: 100%;
+  max-width: 1140px;
+  flex-direction: column;
+}
+
+@media (max-width: 991px) {
+  .navigation-container {
+    max-width: 100%;
+    margin-bottom: 40px;
+  }
+}
+
+.top-bar,
+.bottom-divider {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  gap: 20px;
+  font-size: 15px;
+  color: #000;
+  font-weight: 400;
+  white-space: nowrap;
+  text-align: center;
+}
+
+@media (max-width: 991px) {
+  .top-bar {
+    max-width: 100%;
+    flex-wrap: wrap;
+    white-space: initial;
+  }
+}
+
+.brand-logo,
+.promo-image {
+aspect-ratio: 1;
+object-fit: contain;
+width: 64px; /* Загальний розмір для обох логотипів */
+}
+
+.promo-image {
+width: 362px; /* Розмір промо логотипу */
+}
+
+.menu-options {
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 700; /* або 'bold' */
+  align-self: end;
+  display: flex;
+  margin-top: 37px;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+@media (max-width: 991px) {
+  .menu-options {
+      white-space: initial;
+  }
+}
+
+
+.bottom-divider {
+  background-color: #000;
+  margin-top: 26px;
+  height: 1px;
+  width: 1140px;
+}
+
+@media (max-width: 991px) {
+  .bottom-divider {
+    max-width: 100%;
+  }
+}
+
+.content-section {
+  margin-top: 88px;
+  max-width: 1140px;
+}
+
+@media (max-width: 991px) {
+  .content-section {
+    margin-top: 40px;
+  }
+}
+
+.content-section .row {
+  gap: 20px;
+  display: flex;
+}
+
+@media (max-width: 991px) {
+  .content-section .row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0px;
+  }
+}
+
+.highlight-section,
+.image-section {
+  display: flex;
+  flex-direction: column;
+  line-height: normal;
+}
+
+.highlight-section {
+  width: 627px;
+  align-items: start;
+  border-radius: 50px;
+  background-color: #65dbb8;
+  display: flex;
+  flex-grow: 1;
+  padding: 80px;
+}
+
+.image-section {
+  width: 484px; /* Змінено на ширину відповідно до вимог */
+  justify-content: center;
+  align-items: center;
+  border-radius: 50px;
+  background-color: #3b96d1;
+  padding: 42px 60px 80px;
+  position: relative; /* Для позиціонування тексту в середині */
+}
+
+.image-section img {
+  width: 362px; /* Робимо картинку адаптивною */
+  height: 362px; /* Робимо картинку адаптивною */
+  position: absolute; /* Позиціонуємо її абсолютно */
+  top: center; /* Переміщаємо картинку на верхній край контейнера */
+  left: center; /* Переміщаємо картинку на лівий край контейнера */
+}
+
+@media (max-width: 991px) {
+  .highlight-section,
+  .image-section {
+    width: 484px;
+    margin-top: 28px;
+    padding: 0 20px;
+  }
+}
+
+.highlight-text {
+  color: #000;
+  margin-top: 41px;
+  font: 700 40px/54px 'Open Sans', sans-serif; /* Додано відступ між рядками */
+}
+
+.cta-button {
+  justify-content: center;
+  align-items: center;
+  border-radius: 15px;
+  background-color: #000;
+  margin-bottom: 32px;
+  width: 376px;
+  max-width: 100%;
+  color: #fff;
+  text-align: center;
+  padding: 24px 60px;
+  font: 400 17px/1 'Open Sans', sans-serif;
+}
+
+@media (max-width: 991px) {
+  .cta-button {
+    padding: 24px 20px;
+  }
+}
+.about-section {
+  padding: 40px; /* Задайте відступи від країв секції */
+  max-width: 1140px; /* Максимальна ширина секції, яка відповідає ширині сторінки */
+  margin: 0 auto; /* Вирівнюємо секцію по центру */
+  font-family: 'Open Sans', sans-serif; /* Встановлюємо шрифт Open Sans */
+}
+
+.section-title {
+  font-size: 32px; /* Збільшуємо розмір заголовку */
+  color: #000000; /* Колір тексту заголовку */
+  margin-bottom: 30px; /* Збільшуємо відступ від тексту нижче заголовку */
+}
+
+.section-description {
+  font-size: 20px; /* Збільшуємо розмір тексту */
+  color: #000000; /* Колір тексту */
+  line-height: 1.8; /* Збільшуємо міжрядковий інтервал */
+  margin-bottom: 40px; /* Збільшуємо відступ від тексту нижче тексту */
+  max-width: 1000px; /* Встановлюємо максимальну ширину тексту */
+  margin: 0 auto; /* Вирівнюємо текст по центру */
+}
+
+
+
+.image-container {
+  display: flex;
+  justify-content: center; /* Вирівнюємо по горизонталі по центру */
+  align-items: center; /* Вирівнюємо по вертикалі по центру */
+  padding: 40px; /* Додатковий відступ всередині контейнера */
+}
+
+.image-container img {
+  max-width: 1140px; /* Максимальна ширина зображення */
+  border: 10px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  border-radius: 15px; /* Заокруглені кути рамки */
+}
+
+
+
