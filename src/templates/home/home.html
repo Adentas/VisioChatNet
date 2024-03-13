@@ -11,10 +11,15 @@
 <div class="page">
   <header class="navigation-container">
     <div class="top-bar">
-      <img loading="lazy" src="https://cdn.builder.io/api/v1/image/assets/TEMP/237d2afd3c4ae9419fa7a21ef7abd7e5534ce965d8365a6764fe1fd38dc4ec2f?apiKey=b26021675ada455fb198954b077b3b88&" class="brand-logo" />
       <nav class="menu-options">
-        <div class="Home">Home</div>
+        <img loading="lazy" src="https://cdn.builder.io/api/v1/image/assets/TEMP/237d2afd3c4ae9419fa7a21ef7abd7e5534ce965d8365a6764fe1fd38dc4ec2f?apiKey=b26021675ada455fb198954b077b3b88&" class="brand-logo" />
+        <a href="#" class="Home">Home</a>
         <div class="Contacts">Contacts</div>
+        <div class="About">About</div>
+      </nav>
+      <nav class="sign-options">
+        <a href="registration.html" class="Sign-Up">Sign Up</a> <!-- Посилання на сторінку реєстрації -->
+        <a href="login.html" class="Login">Login</a> <!-- Посилання на сторінку входу -->
       </nav>
     </div>
     <div class="bottom-divider"></div>
@@ -23,7 +28,7 @@
     <div class="row">
       <article class="highlight-section">
         <h2 class="highlight-text">Greetings,<br>I'm VisioChatNet,<br>I can class your photo</h2>
-        <button class="cta-button">Try now -></button>
+        <button class="cta-button" onclick="window.location.href='templates/base.html'">Try now -></button>
       </article>
       <aside class="image-section">
         <img loading="lazy" src="https://cdn.builder.io/api/v1/image/assets/TEMP/6c9998c17aae5587daf37b718cca3a0b3fe554c2ff8e81dc264f1b70b66bbf0d?apiKey=b26021675ada455fb198954b077b3b88&" class="promo-image" />
@@ -49,43 +54,42 @@
       <h2 class="brand-name">VISIOCHATNET</h2>
       <nav class="navigation">
         <a href="#" class="nav-item">Home</a>
-        <a href="#" class="nav-item">Contacts</a>
+        <a href="#footer" class="nav-item">Contacts</a>
       </nav>
     </section>
     <section class="collaborate-section">
       <h2 class="collaborate-call">Looking to Collaborate 🤝</h2>
       <div class="github-links">
         <div>
-          <a href="#" class="github-account">GitHub: Illya Hryhoriev (Team Lead)</a><br>
-          <a href="#" class="github-account">GitHub: Dmytro Paukov (Scrum Master)</a>
+          <a href="https://github.com/Adentas" class="github-account">GitHub: Illya Hryhoriev (Team Lead)</a><br>
+          <a href="https://github.com/paukdv" class="github-account">GitHub: Dmytro Paukov (Scrum Master)</a>
         </div>
         <div>
-          <a href="#" class="github-account">GitHub: Dmytro Klymenko (Dev)</a><br>
-          <a href="#" class="github-account">GitHub: Dmytro Filin (Dev)</a>
+          <a href="https://github.com/leegosx" class="github-account">GitHub: Dmytro Klymenko (Dev)</a><br>
+          <a href="https://github.com/UkrainianEagleOwl" class="github-account">GitHub: Dmytro Filin (Dev)</a>
         </div>
       </div>
     </section>
   </div>
 </footer>
 
-<!-- <script>
-  const footer = document.getElementById('footer');
-  let isFooterVisible = true;
-
-  window.addEventListener('scroll', function() {
-    if (window.scrollY > (document.body.scrollHeight - window.innerHeight - 100)) {
-      if (!isFooterVisible) {
-        footer.style.transform = 'translateY(0)';
-        isFooterVisible = true;
-      }
-    } else {
-      if (isFooterVisible) {
-        footer.style.transform = 'translateY(100%)';
-        isFooterVisible = false;
-      }
-    }
+<script>
+  // Відслідковуємо клік на кнопці "Contacts"
+  document.querySelector('.Contacts').addEventListener('click', function() {
+    // Знаходимо футер
+    const footer = document.getElementById('footer');
+    // Прокручуємо сторінку до футера
+    footer.scrollIntoView({ behavior: 'smooth' });
   });
-</script> -->
+
+  // Відслідковуємо клік на кнопці "About"
+  document.querySelector('.About').addEventListener('click', function() {
+    // Знаходимо секцію "About"
+    const aboutSection = document.querySelector('.about-section');
+    // Прокручуємо сторінку до секції "About"
+    aboutSection.scrollIntoView({ behavior: 'smooth' });
+  });
+</script>
 
 </body>
 </html>
