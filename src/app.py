@@ -7,6 +7,7 @@ from src.database.models import User
 
 from flask import Flask, request, jsonify, render_template
 from flask_login import LoginManager
+from src.routes.history_routes import history_bp
 from PIL import Image
 import numpy as np
 from tensorflow.keras.models import load_model
@@ -82,3 +83,4 @@ def healthchecker():
 
 if __name__ == '__main__':
     app.run(debug=True, host='127.0.0.1', port=5000)
+    app.register_blueprint(history_bp)
