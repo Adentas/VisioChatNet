@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 
 load_dotenv(".env", encoding="utf-8")
 
+
 class Config:
     SQLALCHEMY_DATABASE_URI: str = (
         "postgresql+psycopg2://user:password@localhost:5432/postgres"
@@ -14,5 +15,6 @@ class Config:
     postgres_host = os.environ.get("POSTGRES_HOST")
     postgres_port = os.environ.get("POSTGRES_PORT")
     postgres_db = os.environ.get("POSTGRES_DB")
-    
+
+
 settings = Config()
