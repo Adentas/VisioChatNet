@@ -1,9 +1,10 @@
 /* Styles for footer */
 .footer-container {
-  border-radius: 30px;
-  border: solid rgba(0, 0, 0, 1);
-  border-width: 3px 0 3px 0;
-  background-color: #f0f5ff;
+  border: solid rgba(0, 0, 0, 0.3);
+  border-width: 0px 0 0 0;
+  /* background-color: #f0f5ff; */
+  background: linear-gradient(to right, rgba(59, 150, 209, 0.3) 0%, rgba(101, 219, 184, 0.1) calc(50% - 580px), rgba(240, 245, 255, 0.8) calc(50% - 580px), rgba(240, 245, 255, 0.8) calc(50% + 580px), rgba(101, 219, 184, 0.1) calc(100% - 580px), rgba(59, 150, 209, 0.3) 100%);
+  backdrop-filter: blur(10px);
   display: flex;
   width: 100%;
   height: auto; /* Замінено фіксовану висоту на автоматичну */
@@ -61,6 +62,7 @@
     font-weight: 400;
     letter-spacing: 0.75px;
     line-height: 140%;
+    font-family: Nunito, sans-serif;
 }
 
 @media (max-width: 991px) {
@@ -71,19 +73,15 @@
     }
 }
 
+
 .nav-item,
 .github-account {
-    font-family: Nunito, sans-serif;
+    cursor: pointer;
 }
 
-.footer-container .navigation a,
 .footer-container .github-links a {
   text-decoration: none; /* Відключаємо звичайне підкреслення посилань */
   color: inherit; /* Застосовуємо колір тексту, що успадковується від батьківського елемента */
-  font-family: inherit; /* Застосовуємо шрифт, що успадковується від батьківського елемента */
-  font-size: inherit; /* Застосовуємо розмір шрифту, що успадковується від батьківського елемента */
-  font-weight: inherit; /* Застосовуємо жирність шрифту, що успадковується від батьківського елемента */
-  /* Інші необхідні стилі, які вам потрібні */
 }
 
 .page {
@@ -230,6 +228,7 @@ width: 362px; /* Розмір промо логотипу */
 a.Home {
   color: inherit; /* Використовуємо колір, успадкований від батьківського елемента */
   text-decoration: none; /* Видаляємо підкреслення */
+  cursor: pointer;
 }
 
 
@@ -275,6 +274,7 @@ a.Home {
   display: flex;
   flex-direction: column;
   line-height: normal;
+  position: relative;
 }
 
 .highlight-section {
@@ -351,6 +351,8 @@ a.Home {
   font-size: 32px; /* Збільшуємо розмір заголовку */
   color: #000000; /* Колір тексту заголовку */
   margin-bottom: 30px; /* Збільшуємо відступ від тексту нижче заголовку */
+  font-family: 'Open Sans', sans-serif; 
+  
 }
 
 .section-description {
@@ -372,12 +374,11 @@ a.Home {
 }
 
 .image-container img {
-  max-width: 1140px; /* Максимальна ширина зображення */
+  max-width: 600px; /* Максимальна ширина зображення */
   border: 10px solid rgba(0, 0, 0, 0.1);
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
   border-radius: 15px; /* Заокруглені кути рамки */
 }
-
 
 .Sign-Up {
   padding: 10px 20px;
@@ -394,4 +395,126 @@ a.Home {
   /* background-color: #65dbb8; */
   color: #fff;
   cursor: pointer;
+}
+
+/* 
+sIGN */
+
+/* Стилі для форм реєстрації та входу */
+
+.registration-form,
+.login-form {
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.registration-form input,
+.login-form input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+}
+
+.registration-form button,
+.login-form button {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 5px;
+  background-color: #3498db;
+  color: #fff;
+  cursor: pointer;
+}
+
+.registration-form button:hover,
+.login-form button:hover {
+  background-color: #2980b9;
+}
+
+.Sign {
+  background-color: #f0f5ff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+
+ /* Оновлений стиль для модального вікна */
+ .modal {
+  display: none;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.5);
+  overflow: auto;
+}
+
+.modal-content {
+  background-color: #fefefe;
+  margin: auto;
+  padding: 20px;
+  border-radius: 10px; /* Заокруглені кути */
+  width: 300px; /* Ширина вікна */
+  text-align: center; /* Центрування вмісту */
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.close {
+  color: #aaaaaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+/* Стилі для кнопки "Login" */
+.login-button {
+  background-color: #4CAF50; /* Зелений колір */
+  color: white;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  border-radius: 5px; /* Заокруглені кути */
+  cursor: pointer;
+  border: none;
+}
+
+.login-button:hover {
+  background-color: #45a049; /* Темнозелений колір при наведенні */
+}
+
+/* Стилі для кнопки "Sign Up" */
+.signup-button {
+  background-color: #4CAF50; /* Зелений колір */
+  color: white;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  border-radius: 5px; /* Заокруглені кути */
+  cursor: pointer;
+  border: none;
+}
+
+.signup-button:hover {
+  background-color: #45a049; /* Темнозелений колір при наведенні */
 }
