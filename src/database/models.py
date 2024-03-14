@@ -14,6 +14,10 @@ from datetime import datetime
 
 Base = declarative_base()
 
+# Constants for message types
+MESSAGE_TYPE_USER = "user"
+MESSAGE_TYPE_BOT = "bot"
+
 
 class User(Base):
     __tablename__ = "users"
@@ -35,6 +39,7 @@ class Message(Base):
     id = Column(Integer, primary_key=True)
     chat_id = Column(Integer, ForeignKey("chats.id"))
     user_id = Column(Integer, ForeignKey("users.id"))
-    timestamp = Column(DateTime, default=datetime.utcnow)
+    timestamp = Column(DateTime)
     text = Column(Text, nullable=True)
     image = Column(BYTEA, nullable=True)
+    message_type = Column(String, nullable=False)

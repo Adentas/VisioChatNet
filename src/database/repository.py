@@ -31,11 +31,15 @@ def start_chat(db: Session, user_id: int):
         return None
 
 
-def send_message(
-    db: Session, chat_id: int, user_id: int, text: str = None, image: bytes = None
-):
+def send_message(db: Session, chat_id: int, user_id: int, message_type: str, text: str = None, image: str = None):
     try:
-        new_message = Message(chat_id=chat_id, user_id=user_id, text=text, image=image)
+        new_message = Message(
+            chat_id=chat_id,
+            user_id=user_id,
+            text=text,
+            image=image,
+            message_type=message_type
+        )
         db.add(new_message)
         db.commit()
         db.refresh(new_message)
