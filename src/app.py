@@ -29,7 +29,7 @@ def load_user(user_id):
     return db.query(User).get(int(user_id))
 
 
-model = load_model("ai/CIFAR_10.hdf5")
+model = load_model('../src/ai/CIFAR_10.hdf5')
 chat_id = -1
 
 
