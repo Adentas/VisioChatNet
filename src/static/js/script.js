@@ -62,3 +62,45 @@ document.addEventListener("DOMContentLoaded", function() {
         imageInput.addEventListener("change", fileSubmit);
     }
 });
+
+
+// Hrihoriev add
+
+// Функція для прокручування сторінки до секції "About"
+function scrollToAbout() {
+    const aboutSection = document.querySelector('.about-section');
+    aboutSection.scrollIntoView({ behavior: 'smooth' });
+  }
+  
+  // Функція для прокручування сторінки до футера (секції "Contacts")
+  function scrollToContacts() {
+    const footer = document.getElementById('footer');
+    footer.scrollIntoView({ behavior: 'smooth' });
+  }
+  
+  function scrollToTop() {
+    const navigation = document.getElementById('navigation');
+    navigation.scrollIntoView({ behavior: 'smooth' });
+  }
+  
+// Функція відкриття модального вікна
+function openModal() {
+    var modal = document.getElementById("myModal");
+    modal.style.display = "block";
+  }
+  
+  // Функція закриття модального вікна
+  function closeModal() {
+    var modal = document.getElementById("myModal");
+    modal.style.display = "none";
+  }
+
+// Функція відкриття модального вікна реєстрації
+function openSignupModal() {
+    document.getElementById('signupModal').style.display = 'block';
+  }
+
+  // Функція закриття модального вікна реєстрації
+  function closeSignupModal() {
+    document.getElementById('signupModal').style.display = 'none';
+  }

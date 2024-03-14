@@ -18,14 +18,14 @@ login_manager = LoginManager(app)
 login_manager.login_view = 'auth.login'
 app.register_blueprint(auth_bp, url_prefix='/auth')
 
-model = load_model('src/ai/CIFAR_10.hdf5')
-
+#model = load_model('src/ai/CIFAR_10.hdf5')
 
 @login_manager.user_loader
 def load_user(user_id):
     db = SessionLocal()
     return db.query(User).get(int(user_id))
 
+model = load_model('./src/ai/CIFAR_10.hdf5')
 
 def preprocess_image(uploaded_file):
     img = Image.open(uploaded_file)
@@ -35,6 +35,9 @@ def preprocess_image(uploaded_file):
     img_array = np.expand_dims(img_array, axis=0)
     return img_array
 
+@app.route('/')
+def home():
+    return render_template("home/home.html")
 
 @app.route('/upload_predict', methods=['POST', 'GET'])
 def upload_predict():

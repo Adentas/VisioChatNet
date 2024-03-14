@@ -4,17 +4,22 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Your Page Title</title>
-  <link rel="stylesheet" href="style/style.css">
+  <link rel="stylesheet" href="/static/styles/home.css">
 </head>
 <body>
 
 <div class="page">
   <header class="navigation-container">
     <div class="top-bar">
-      <img loading="lazy" src="https://cdn.builder.io/api/v1/image/assets/TEMP/237d2afd3c4ae9419fa7a21ef7abd7e5534ce965d8365a6764fe1fd38dc4ec2f?apiKey=b26021675ada455fb198954b077b3b88&" class="brand-logo" />
-      <nav class="menu-options">
-        <div class="Home">Home</div>
-        <div class="Contacts">Contacts</div>
+      <nav class="menu-options" id="navigation">
+        <img loading="lazy" src="https://cdn.builder.io/api/v1/image/assets/TEMP/237d2afd3c4ae9419fa7a21ef7abd7e5534ce965d8365a6764fe1fd38dc4ec2f?apiKey=b26021675ada455fb198954b077b3b88&" class="brand-logo" />
+        <a href="home.html" class="Home" onclick="scrollToTop()">Home</a>
+        <div class="About" onclick="scrollToAbout()">About</div>
+        <div class="Contacts" onclick="scrollToContacts()">Contacts</div>
+      </nav>
+      <nav class="sign-options">
+        <a href="#" class="Sign-Up" onclick="openSignupModal()">Sign Up</a> <!-- Посилання на сторінку реєстрації -->
+        <a href="#" class="Login" onclick="openModal()">Login</a><!-- Посилання на сторінку входу -->
       </nav>
     </div>
     <div class="bottom-divider"></div>
@@ -23,7 +28,7 @@
     <div class="row">
       <article class="highlight-section">
         <h2 class="highlight-text">Greetings,<br>I'm VisioChatNet,<br>I can class your photo</h2>
-        <button class="cta-button">Try now -></button>
+        <button class="cta-button" onclick="window.location.href='/upload_predict'">Try now -></button>
       </article>
       <aside class="image-section">
         <img loading="lazy" src="https://cdn.builder.io/api/v1/image/assets/TEMP/6c9998c17aae5587daf37b718cca3a0b3fe554c2ff8e81dc264f1b70b66bbf0d?apiKey=b26021675ada455fb198954b077b3b88&" class="promo-image" />
@@ -36,7 +41,7 @@
     <div class="section-description">
       <p>Our project represents a unique website that integrates artificial intelligence, trained on the famous CIFAR-10 dataset. CIFAR-10 is a standard dataset in the field of machine learning, containing images of various objects such as: <strong>cars, birds, cats, deer, frogs, trucks, dogs, horses, airplanes, and ships.</strong> Our AI model uses this data to improve its image recognition capabilities, providing accurate and quick results.</p>
       <div class="image-container">
-        <img src="style/bot.jpg" alt="About Image">
+        <img src="/static/styles/img/bot.jpg" alt="About Image">
       </div>
     </div>
   </section>
@@ -48,44 +53,57 @@
     <section class="brand-section">
       <h2 class="brand-name">VISIOCHATNET</h2>
       <nav class="navigation">
-        <a href="#" class="nav-item">Home</a>
-        <a href="#" class="nav-item">Contacts</a>
+        <div class="nav-item" onclick="scrollToTop()">Home</div>
+        <div class="About" onclick="scrollToAbout()">About</div>
+        <div class="Contacts" onclick="scrollToContacts()">Contacts</div>
       </nav>
     </section>
     <section class="collaborate-section">
       <h2 class="collaborate-call">Looking to Collaborate 🤝</h2>
       <div class="github-links">
         <div>
-          <a href="#" class="github-account">GitHub: Illya Hryhoriev (Team Lead)</a><br>
-          <a href="#" class="github-account">GitHub: Dmytro Paukov (Scrum Master)</a>
+          <a href="https://github.com/Adentas" class="github-account">GitHub: Illya Hryhoriev (Team Lead)</a><br>
+          <a href="https://github.com/paukdv" class="github-account">GitHub: Dmytro Paukov (Scrum Master)</a>
         </div>
         <div>
-          <a href="#" class="github-account">GitHub: Dmytro Klymenko (Dev)</a><br>
-          <a href="#" class="github-account">GitHub: Dmytro Filin (Dev)</a>
+          <a href="https://github.com/leegosx" class="github-account">GitHub: Dmytro Klymenko (Dev)</a><br>
+          <a href="https://github.com/UkrainianEagleOwl" class="github-account">GitHub: Dmytro Filin (Dev)</a>
         </div>
       </div>
     </section>
   </div>
 </footer>
 
-<!-- <script>
-  const footer = document.getElementById('footer');
-  let isFooterVisible = true;
+<!-- Контейнер для модального вікна -->
+<div id="myModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal()">&times;</span>
+    <!-- Сюди додайте вашу форму логіну -->
+    <h2 class="section-title">Login</h2>
+    <form action="login_handler.php" method="POST" class="login-form">
+      <input type="email" name="email" placeholder="Email" required>
+      <input type="password" name="password" placeholder="Password" required>
+      <button type="submit" class="cta-button Login">Login</button>
+    </form>
+  </div>
+</div>
 
-  window.addEventListener('scroll', function() {
-    if (window.scrollY > (document.body.scrollHeight - window.innerHeight - 100)) {
-      if (!isFooterVisible) {
-        footer.style.transform = 'translateY(0)';
-        isFooterVisible = true;
-      }
-    } else {
-      if (isFooterVisible) {
-        footer.style.transform = 'translateY(100%)';
-        isFooterVisible = false;
-      }
-    }
-  });
-</script> -->
+<!-- Модальне вікно -->
+<div id="signupModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeSignupModal()">&times;</span>
+    <!-- Форма реєстрації -->
+    <h2 class="section-title">Sign Up</h2>
+    <form action="registration_handler.php" method="POST" class="registration-form">
+      <input type="text" name="username" placeholder="Username" required>
+      <input type="email" name="email" placeholder="Email" required>
+      <input type="password" name="password" placeholder="Password" required>
+      <button type="submit" class="cta-button signup-button">Sign Up</button>
+    </form>
+  </div>
+</div>
+
+<script src="static/js/script.js"></script>
 
 </body>
 </html>
