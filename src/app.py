@@ -8,7 +8,7 @@ from tensorflow.keras.models import load_model
 
 app = Flask(__name__)
 
-model = load_model('./ai/CIFAR_10.hdf5')
+model = load_model('./src/ai/CIFAR_10.hdf5')
 
 def preprocess_image(uploaded_file):
     img = Image.open(uploaded_file)
