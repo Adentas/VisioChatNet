@@ -1,12 +1,29 @@
+import os
+
 from sqlalchemy import text
 from src.database.db import SessionLocal
+from src.auth_routes import auth_bp
+from src.database.models import User
 
 from flask import Flask, request, jsonify, render_template
+from flask_login import LoginManager
+from src.routes.history_routes import history_bp
 from PIL import Image
 import numpy as np
 from tensorflow.keras.models import load_model
 
 app = Flask(__name__)
+app.secret_key = os.getenv('SECRET_KEY')
+login_manager = LoginManager(app)
+login_manager.login_view = 'auth.login'
+app.register_blueprint(auth_bp, url_prefix='/auth')
+
+#model = load_model('src/ai/CIFAR_10.hdf5')
+
+@login_manager.user_loader
+def load_user(user_id):
+    db = SessionLocal()
+    return db.query(User).get(int(user_id))
 
 model = load_model('./src/ai/CIFAR_10.hdf5')
 
@@ -50,15 +67,16 @@ def upload_predict():
                 response_message += f"{i}: {classes[index]} with a probability {class_probability:.2f}%\n"
 
             return jsonify({'result': response_message})
-        
+
     return render_template('base.html')
+
 
 @app.route("/healthchecker")
 def healthchecker():
     try:
         db = SessionLocal()
         result = db.execute(text("SELECT 1")).fetchone()
-        db.close() 
+        db.close()
         if result is None:
             return jsonify({"detail": "Database is not configured correctly"}), 500
         return jsonify({"message": "Welcome to Flask! Database connected correctly"})
@@ -68,3 +86,4 @@ def healthchecker():
 
 if __name__ == '__main__':
     app.run(debug=True, host='127.0.0.1', port=5000)
+    app.register_blueprint(history_bp)
