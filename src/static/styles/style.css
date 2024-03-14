@@ -204,3 +204,7 @@ body {
 .msger-chat {
   background-color: #fcfcfe;
 }
+
+.hidden {
+  display: none !important;
+}

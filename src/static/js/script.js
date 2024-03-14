@@ -27,6 +27,33 @@ function appendMessage(name, img, side, text, timestamp = formatDate(new Date())
         </div>`;
     msgerChat.insertAdjacentHTML("beforeend", msgHTML);
     msgerChat.scrollTop += 500;
+    // Check if we are supposed to send this message to the backend
+    if (side === "right") { // Assuming messages from the current user appear on the "right"
+        sendMessageToBackend(currentChatId, currentUser, text, side, timestamp);
+    }
+}
+
+function sendMessageToBackend(chatId, userId, text, side, timestamp) {
+    fetch('/api/send_message', {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            chat_id: chatId,
+            user_id: userId, // Ensure your backend handles authentication to associate the message with the correct user
+            message_type: side === "left" ? "bot" : "user",
+            text: text,
+            timestamp: timestamp, // Your backend might automatically set the timestamp
+        })
+    })
+        .then(response => response.json())
+        .then(data => {
+            console.log("Message sent successfully:", data);
+        })
+        .catch(error => {
+            console.error("Error sending message:", error);
+        });
 }
 
 // Function to handle file submission and upload
@@ -37,7 +64,7 @@ function fileSubmit() {
 
     // Displaying the image in the chat
     const reader = new FileReader();
-    reader.onload = function(e) {
+    reader.onload = function (e) {
         appendMessage(PERSON_NAME, PERSON_IMG, "right", `<img src="${e.target.result}" alt="Sent image" style="width: 100%;">`);
     };
     reader.readAsDataURL(imageFile);
@@ -47,60 +74,109 @@ function fileSubmit() {
         method: "POST",
         body: formData
     })
-    .then(response => response.json())
-    .then(data => {
-        appendMessage(BOT_NAME, BOT_IMG, "left", data.result);
-    })
-    .catch(error => console.error("Error:", error));
+        .then(response => response.json())
+        .then(data => {
+            appendMessage(BOT_NAME, BOT_IMG, "left", data.result);
+        })
+        .catch(error => console.error("Error:", error));
 }
 
 // Ensure this function is called after the DOM fully loads
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
     // If there are specific initializations or event listeners, add them here.
     const imageInput = document.getElementById("imageInput");
-    if(imageInput) {
+    if (imageInput) {
         imageInput.addEventListener("change", fileSubmit);
     }
 });
 
+// History part of code ---------------------------------------
+document.addEventListener("DOMContentLoaded", function () {
+    fetch('/api/is_authenticated')
+        .then(response => response.json())
+        .then(data => {
+            if (data.authenticated) {
+                document.getElementById('chat-history').classList.remove('hidden');
+                loadChatHistory(); // Load chat history if the user is authenticated
+            } else {
+                document.getElementById('chat-history').classList.add('hidden');
+            }
+        })
+        .catch(error => console.error('Error verifying authentication status:', error));
+});
 
+function loadChatHistory() {
+    fetch('/api/get_user_chats') // Ensure this endpoint is defined in your Flask app
+        .then(response => response.json())
+        .then(chats => {
+            const chatList = document.getElementById('chat-history').querySelector('.list-unstyled');
+            chatList.innerHTML = ''; // Clear existing chat list
+            chats.forEach(chat => {
+                const listItem = document.createElement('li');
+                listItem.innerHTML = `<a href="javascript:void(0);" onclick="selectChat(${chat.id})">${chat.title}</a>`;
+                chatList.appendChild(listItem);
+            });
+        })
+        .catch(error => console.error('Error loading chat history:', error));
+}
+
+function selectChat(chatId) {
+    fetch(`/api/get_chat_history?chat_id=${chatId}`)
+        .then(response => response.json())
+        .then(messages => {
+            // Clear current messages
+            const msgerChat = document.querySelector('.msger-chat');
+            msgerChat.innerHTML = '';
+
+            // Append each message to the chat
+            messages.forEach(msg => {
+                const side = msg.message_type === "bot" ? "left" : "right";
+                // Assuming 'name' and 'img' are properly set for both bot and user messages
+                // You might need to adjust how 'img' is set based on your data structure
+                const img = msg.message_type === "bot" ? BOT_IMG : PERSON_IMG; // Use your constants or logic to set the correct image
+                const name = msg.message_type === "bot" ? BOT_NAME : PERSON_NAME;
+                appendMessage(name, img, side, msg.text, msg.timestamp);
+            });
+        })
+        .catch(error => console.error('Error loading chat messages:', error));
+}
 // Hrihoriev add
 
 // Функція для прокручування сторінки до секції "About"
 function scrollToAbout() {
     const aboutSection = document.querySelector('.about-section');
     aboutSection.scrollIntoView({ behavior: 'smooth' });
-  }
-  
-  // Функція для прокручування сторінки до футера (секції "Contacts")
-  function scrollToContacts() {
+}
+
+// Функція для прокручування сторінки до футера (секції "Contacts")
+function scrollToContacts() {
     const footer = document.getElementById('footer');
     footer.scrollIntoView({ behavior: 'smooth' });
-  }
-  
-  function scrollToTop() {
+}
+
+function scrollToTop() {
     const navigation = document.getElementById('navigation');
     navigation.scrollIntoView({ behavior: 'smooth' });
-  }
-  
+}
+
 // Функція відкриття модального вікна
 function openModal() {
     var modal = document.getElementById("myModal");
     modal.style.display = "block";
-  }
-  
-  // Функція закриття модального вікна
-  function closeModal() {
+}
+
+// Функція закриття модального вікна
+function closeModal() {
     var modal = document.getElementById("myModal");
     modal.style.display = "none";
-  }
+}
 
 // Функція відкриття модального вікна реєстрації
 function openSignupModal() {
     document.getElementById('signupModal').style.display = 'block';
-  }
+}
 
-  // Функція закриття модального вікна реєстрації
-  function closeSignupModal() {
+// Функція закриття модального вікна реєстрації
+function closeSignupModal() {
     document.getElementById('signupModal').style.display = 'none';
-  }
+}
