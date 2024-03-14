@@ -25,7 +25,7 @@ def load_user(user_id):
     db = SessionLocal()
     return db.query(User).get(int(user_id))
 
-model = load_model('./src/ai/CIFAR_10.hdf5')
+model = load_model('../src/ai/CIFAR_10.hdf5')
 
 def preprocess_image(uploaded_file):
     img = Image.open(uploaded_file)
