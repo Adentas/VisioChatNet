@@ -374,7 +374,6 @@ a.Home {
 }
 
 image-container img {
-  max-width: 1140px; /* Максимальна ширина зображення */
   max-width: 600px; /* Максимальна ширина зображення */
   border: 10px solid rgba(0, 0, 0, 0.1);
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
