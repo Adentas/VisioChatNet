@@ -17,9 +17,10 @@ engine = create_engine(SQLALCHEMY_DATABASE_URL)
 # Create a SessionLocal class which will serve as a factory for new Session objects
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
+
 def get_db():
     db = SessionLocal()
     try:
-        yield db
+        return db
     finally:
         db.close()
