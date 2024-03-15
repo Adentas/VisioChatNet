@@ -518,3 +518,16 @@ sIGN */
 .signup-button:hover {
   background-color: #45a049; /* Темнозелений колір при наведенні */
 }
+
+.Logout {
+  padding: 10px 20px;
+  border-radius: 20px;
+  background-color: #FF5733; /* Червоний колір фону для кнопки виходу */
+  color: #fff;
+  cursor: pointer;
+  text-decoration: none; /* Відключаємо підкреслення */
+}
+
+.Logout:hover {
+  background-color: #FF4833; /* Змінений колір фону при наведенні */
+}
