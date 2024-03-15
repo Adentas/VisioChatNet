@@ -104,3 +104,49 @@ function openSignupModal() {
   function closeSignupModal() {
     document.getElementById('signupModal').style.display = 'none';
   }
+
+// Функція, яка перевіряє, чи користувач увійшов
+function checkAuthStatus() {
+    // Ваша логіка перевірки статусу авторизації користувача тут
+    var isLoggedIn = true; // Припустимо, що користувач увійшов
+    return isLoggedIn;
+}
+
+// Функція для оновлення навігаційного меню в залежності від статусу авторизації користувача
+function updateNavigationMenu() {
+    var isLoggedIn = checkAuthStatus();
+    var loginButton = document.querySelector('.Login');
+    var signUpButton = document.querySelector('.Sign-Up');
+    var logoutButton = document.createElement('a');
+    logoutButton.textContent = 'Log Out';
+    logoutButton.className = 'Logout';
+    logoutButton.href = '#'; // Додайте URL для виходу з системи
+    logoutButton.onclick = function() {
+        isLoggedIn = false; // Встановлюємо значення isLoggedIn на false при натисканні кнопки "Log Out"
+        var logoutButton = document.querySelector('.Logout');
+        if (logoutButton) {
+            logoutButton.parentNode.removeChild(logoutButton);
+        }
+        loginButton.style.display = 'block'; // Показуємо кнопку "Login"
+        signUpButton.style.display = 'block'; // Показуємо кнопку "Sign Up"
+    };
+
+    if (isLoggedIn) {
+        // Заміна кнопок "Login" та "Sign Up" на кнопку "Log Out"
+        loginButton.style.display = 'none';
+        signUpButton.style.display = 'none';
+        document.querySelector('.sign-options').appendChild(logoutButton);
+    } else {
+        // Показати кнопки "Login" та "Sign Up", якщо користувач не увійшов
+        loginButton.style.display = 'block';
+        signUpButton.style.display = 'block';
+        var logoutButton = document.querySelector('.Logout');
+        if (logoutButton) {
+            logoutButton.parentNode.removeChild(logoutButton);
+        }
+    }
+}
+
+// Виклик функції для оновлення навігаційного меню при завантаженні сторінки
+updateNavigationMenu();
+

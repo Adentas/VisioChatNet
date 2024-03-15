@@ -46,9 +46,12 @@
             <div id="predictionResult" class="msg-text"></div>
         </main>
 
+        <!-- Форма з кнопкою "Вихід" -->
         <form id="fileUploadForm" class="msger-inputarea" method="post" enctype="multipart/form-data">
             <input type="file" id="imageInput" name="file" accept="image/*" style="display:none">
             <label for="imageInput" class="msger-send-btn">Upload Image</label>
+            <!-- Кнопка "Вихід" у формі -->
+            <button id="logoutBtnForm" class="logout-btn-form" onclick="window.location.href='/'">Exit</button>
         </form>
     </section>
 
