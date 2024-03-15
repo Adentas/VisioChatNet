@@ -1,12 +1,13 @@
 # history_routes.py
 import logging
+from datetime import datetime
 from flask import Blueprint, request, jsonify
 from werkzeug.exceptions import BadRequest
 from sqlalchemy.orm import Session
 from flask_login import current_user
 from src.database.db import (
     get_db,
-) 
+)
 from src.database.repository import (
     start_chat,
     delete_chat,
@@ -16,6 +17,7 @@ from src.database.repository import (
 )
 
 history_bp = Blueprint("history_bp", __name__)
+
 
 @history_bp.route("/start_chat", methods=["POST"])
 def api_start_chat():
@@ -36,7 +38,7 @@ def api_send_message():
         user_id = request.json["user_id"]
         message_type = request.json["message_type"]
         text = request.json.get("text", None)
-        image = request.files.get("image", None) 
+        image = request.files.get("image", None)
         image_bytes = image.read() if image else None
         db: Session = get_db()
         message = send_message(
@@ -69,7 +71,7 @@ def api_get_user_chats():
 
 @history_bp.route("/get_chat_history", methods=["GET"])
 def api_get_chat_history():
-    chat_id = current_user.id  
+    chat_id = request.args.get("chat_id")
     db: Session = get_db()
     messages = get_chat_history(db, chat_id=int(chat_id))
     if messages is not None:
@@ -78,10 +80,10 @@ def api_get_chat_history():
                 "id": message.id,
                 "chat_id": message.chat_id,
                 "user_id": message.user_id,
-                "timestamp": message.timestamp.isoformat(),
+                "timestamp":message.timestamp.isoformat() if message.timestamp else datetime.now().isoformat(),
                 "text": message.text,
                 "message_type": message.message_type,
-                "image": 'Here must be image' if message.image is not None else None
+                "image": 'image' if message.image is not None else None,
             }
             for message in messages
         ]
@@ -92,7 +94,7 @@ def api_get_chat_history():
 
 @history_bp.route("/delete_chat", methods=["DELETE"])
 def api_delete_chat():
-    chat_id = current_user.id
+    chat_id = request.args.get("chat_id")
     if chat_id is None:
         return jsonify({"error": "Chat ID must be provided"}), 400
 

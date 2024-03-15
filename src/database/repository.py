@@ -1,4 +1,5 @@
 import logging
+from datetime import datetime
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
 from .db import get_db  # Assuming db.py contains the get_db function
@@ -10,8 +11,18 @@ def start_chat(db: Session, user_id: int):
     try:
         new_chat = Chat(user_id=user_id, title="Classified image")
         db.add(new_chat)
-        db.commit()
-        db.refresh(new_chat)
+        db.flush()  # This ensures 'new_chat.id' is available without committing the transaction
+
+        # Add a welcome message to the chat
+        welcome_message = Message(
+            chat_id=new_chat.id,
+            user_id=user_id,  # Replace with the actual bot's user ID
+            message_type="bot",
+            text="Hi, welcome to VisioNet! Go ahead and send me your image, and I’ll tell you who’s in it. 😊",
+        )
+        db.add(welcome_message)
+
+        db.commit()  # Commit both the chat and message together as a single transaction
         return new_chat
     except SQLAlchemyError as e:
         db.rollback()
@@ -29,19 +40,23 @@ def send_message(
 ):
     image_binary = image.read() if image else None
     try:
+        print("Sending message")
         new_message = Message(
             chat_id=chat_id,
             user_id=user_id,
             text=text,
             image=image_binary,  # Use the binary data
+            timestamp=datetime.now().isoformat(),
             message_type=message_type,
         )
         db.add(new_message)
         db.commit()
         db.refresh(new_message)
+        print("Message succesfully sent")
         return new_message
     except SQLAlchemyError as e:
         db.rollback()
+        print("Message was not sent")
         logging.error(f"Can't send message in chat_id {chat_id}: {str(e)}")
         return None
 
@@ -82,14 +97,10 @@ def delete_chat(db: Session, chat_id: int) -> bool:
     """
     try:
         chat  = db.query(Chat).filter(Chat.id == chat_id).one_or_none()
-        print("Deleting chat")
         if chat:
             db.delete(chat)
             db.commit()
-            print("Chat deleted")
             return True
-        else:
-            print("Can't find chat")
     except SQLAlchemyError as e:
         logging.error(f"Can't delete chat with chat_id {chat_id}: {str(e)}")
         db.rollback()

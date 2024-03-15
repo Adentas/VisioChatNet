@@ -1,8 +1,8 @@
-"""add_death_cascade_for_messages_in_chat
+"""Initial database migration
 
-Revision ID: 1d084672b1cc
-Revises: 96e75f246bf7
-Create Date: 2024-03-15 11:56:20.140674
+Revision ID: 97cc0fc604ad
+Revises: 1d084672b1cc
+Create Date: 2024-03-15 13:05:41.715241
 
 """
 from typing import Sequence, Union
@@ -12,8 +12,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '1d084672b1cc'
-down_revision: Union[str, None] = '96e75f246bf7'
+revision: str = '97cc0fc604ad'
+down_revision: Union[str, None] = '1d084672b1cc'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 

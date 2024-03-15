@@ -1,8 +1,8 @@
 import os
 
 from sqlalchemy import text
-from src.database.db import SessionLocal,get_db
-from src.database.repository import start_chat,send_message
+from src.database.db import SessionLocal, get_db
+from src.database.repository import start_chat, send_message
 from src.auth_routes import auth_bp
 from src.database.models import User
 
@@ -29,7 +29,7 @@ def load_user(user_id):
     return db.query(User).get(int(user_id))
 
 
-model = load_model('../src/ai/CIFAR_10.hdf5')
+model = load_model("../src/ai/CIFAR_10.hdf5")
 chat_id = -1
 
 
@@ -49,7 +49,9 @@ def home():
 
 def get_predictions(image):
     if image is not None:
+        print("Trying to write image in databes")
         if current_user.is_authenticated:
+            print("User is authorized")
             db = get_db()
             send_message(db, chat_id, current_user.id, "user", image=image)
         # Processing the image and getting predictions from the model
@@ -87,6 +89,17 @@ def get_predictions(image):
                 f"{i}: {classes[index]} with a probability {class_probability:.2f}%\n"
             )
 
+        # Write the bot's response to the database
+        if current_user.is_authenticated and chat_id:
+            db = get_db()
+            send_message(
+                db=db,
+                chat_id=chat_id,
+                user_id=current_user.id,  # Use bot's user ID if it's different
+                message_type="bot",
+                text=response_message,
+            )
+
         return response_message
 
 
@@ -94,8 +107,9 @@ def get_predictions(image):
 def upload_predict():
     if current_user.is_authenticated:
         # Start or retrieve a chat session for authenticated users
-        chat = start_chat(get_db(), user_id=current_user.id)
-        global chat_id 
+        db = get_db()  # Ensure this gets an active session
+        chat = start_chat(db, user_id=current_user.id)
+        global chat_id
         chat_id = chat.id
 
     if request.method == "POST":
@@ -113,6 +127,7 @@ def is_authenticated():
 @app.route("/api/current_user")
 def get_current_user():
     return jsonify({"current_user": current_user})
+
 
 @app.route("/healthchecker")
 def healthchecker():
