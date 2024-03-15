@@ -18,7 +18,7 @@ app.secret_key = os.getenv("SECRET_KEY")
 login_manager = LoginManager(app)
 login_manager.login_view = "auth.login"
 app.register_blueprint(auth_bp, url_prefix="/auth")
-app.register_blueprint(history_bp)
+app.register_blueprint(history_bp, url_prefix="/history")
 
 # model = load_model('src/ai/CIFAR_10.hdf5')
 
@@ -50,7 +50,8 @@ def home():
 def get_predictions(image):
     if image is not None:
         if current_user.is_authenticated:
-            send_message(get_db(), chat_id, current_user.id, "user", image=image)
+            db = get_db()
+            send_message(db, chat_id, current_user.id, "user", image=image)
         # Processing the image and getting predictions from the model
         processed_image = preprocess_image(image)
         prediction = model.predict(processed_image)[0]
@@ -93,7 +94,7 @@ def get_predictions(image):
 def upload_predict():
     if current_user.is_authenticated:
         # Start or retrieve a chat session for authenticated users
-        chat = start_chat(get_db, user_id=current_user.id)
+        chat = start_chat(get_db(), user_id=current_user.id)
         global chat_id 
         chat_id = chat.id
 
@@ -108,6 +109,10 @@ def upload_predict():
 def is_authenticated():
     return jsonify({"authenticated": current_user.is_authenticated})
 
+
+@app.route("/api/current_user")
+def get_current_user():
+    return jsonify({"current_user": current_user})
 
 @app.route("/healthchecker")
 def healthchecker():

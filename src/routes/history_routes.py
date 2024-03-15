@@ -1,7 +1,9 @@
 # history_routes.py
+import logging
 from flask import Blueprint, request, jsonify
 from werkzeug.exceptions import BadRequest
 from sqlalchemy.orm import Session
+from flask_login import current_user
 from src.database.db import (
     get_db,
 ) 
@@ -18,7 +20,8 @@ history_bp = Blueprint("history_bp", __name__)
 @history_bp.route("/start_chat", methods=["POST"])
 def api_start_chat():
     user_id = request.json["user_id"]
-    chat = start_chat(get_db(), user_id=user_id)
+    db: Session = get_db()
+    chat = start_chat(db, user_id=user_id)
     return (
         jsonify({"chat_id": chat.id})
         if chat
@@ -35,8 +38,9 @@ def api_send_message():
         text = request.json.get("text", None)
         image = request.files.get("image", None) 
         image_bytes = image.read() if image else None
+        db: Session = get_db()
         message = send_message(
-            get_db(),
+            db,
             chat_id=chat_id,
             user_id=user_id,
             message_type=message_type,
@@ -55,17 +59,19 @@ def api_send_message():
 
 @history_bp.route("/get_user_chats", methods=["GET"])
 def api_get_user_chats():
-    user_id = request.args.get("user_id")  # Assume user_id is passed as query parameter
-    chats = get_user_chats(get_db(), user_id=int(user_id))
-    return (
-        jsonify(chats) if chats else jsonify({"error": "Failed to retrieve chats"})
-    ), 400
+    if current_user.is_authenticated:
+        db: Session = get_db()
+        chats = get_user_chats(db, user_id=current_user.id)
+        return jsonify(chats if chats else {"error": "Failed to retrieve chats"}), 200
+    else:
+        return jsonify({"error": "User not authenticated"}), 401
 
 
 @history_bp.route("/get_chat_history", methods=["GET"])
 def api_get_chat_history():
-    chat_id = request.args.get("chat_id")  # Assume chat_id is passed as query parameter
-    messages = get_chat_history(get_db(), chat_id=int(chat_id))
+    chat_id = current_user.id  
+    db: Session = get_db()
+    messages = get_chat_history(db, chat_id=int(chat_id))
     if messages is not None:
         messages_formatted = [
             {
@@ -86,15 +92,14 @@ def api_get_chat_history():
 
 @history_bp.route("/delete_chat", methods=["DELETE"])
 def api_delete_chat():
-    chat_id = request.args.get(
-        "chat_id"
-    )  # Assume chat_id is passed as a query parameter
+    chat_id = current_user.id
     if chat_id is None:
         return jsonify({"error": "Chat ID must be provided"}), 400
 
-    success = delete_chat(get_db(), chat_id=int(chat_id))
+    db: Session = get_db()
+    success = delete_chat(db, chat_id=int(chat_id))
 
     if success:
-        return jsonify({"message": "Chat deleted successfully."})
+        return jsonify({"message": "Chat deleted successfully."}), 200
     else:
         return jsonify({"error": "Failed to delete chat."}), 500

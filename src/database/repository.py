@@ -3,11 +3,12 @@ from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
 from .db import get_db  # Assuming db.py contains the get_db function
 from .models import User, Chat, Message  # Assuming models.py contains our ORM models
+from werkzeug.datastructures import FileStorage
 
 
 def start_chat(db: Session, user_id: int):
     try:
-        new_chat = Chat(user_id=user_id)
+        new_chat = Chat(user_id=user_id, title="Classified image")
         db.add(new_chat)
         db.commit()
         db.refresh(new_chat)
@@ -24,15 +25,16 @@ def send_message(
     user_id: int,
     message_type: str,
     text: str = None,
-    image: bytes = None,
+    image: FileStorage = None,
 ):
+    image_binary = image.read() if image else None
     try:
         new_message = Message(
             chat_id=chat_id,
             user_id=user_id,
             text=text,
-            image=image,
-            message_type=message_type
+            image=image_binary,  # Use the binary data
+            message_type=message_type,
         )
         db.add(new_message)
         db.commit()
@@ -79,17 +81,16 @@ def delete_chat(db: Session, chat_id: int) -> bool:
     - True if the chat was successfully deleted, False otherwise.
     """
     try:
-        # First, delete all messages associated with the chat
-        db.query(Message).filter(Message.chat_id == chat_id).delete()
-
-        # Optional: If there's a Chat model that needs to be deleted as well
-        # db.query(Chat).filter(Chat.id == chat_id).delete()
-
-        # Commit the transaction to make sure all deletions are saved
-        db.commit()
-        return True
+        chat  = db.query(Chat).filter(Chat.id == chat_id).one_or_none()
+        print("Deleting chat")
+        if chat:
+            db.delete(chat)
+            db.commit()
+            print("Chat deleted")
+            return True
+        else:
+            print("Can't find chat")
     except SQLAlchemyError as e:
         logging.error(f"Can't delete chat with chat_id {chat_id}: {str(e)}")
-        # Rollback in case of error to avoid leaving the DB in an inconsistent state
         db.rollback()
         return False

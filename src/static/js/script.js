@@ -34,7 +34,7 @@ function appendMessage(name, img, side, text, timestamp = formatDate(new Date())
 }
 
 function sendMessageToBackend(chatId, userId, text, side, timestamp) {
-    fetch('/api/send_message', {
+    fetch('/history/send_message', {
         method: "POST",
         headers: {
             'Content-Type': 'application/json',
@@ -83,45 +83,74 @@ function fileSubmit() {
 
 // Ensure this function is called after the DOM fully loads
 document.addEventListener("DOMContentLoaded", function () {
-    // If there are specific initializations or event listeners, add them here.
+    // Initialization code for imageInput
     const imageInput = document.getElementById("imageInput");
     if (imageInput) {
         imageInput.addEventListener("change", fileSubmit);
     }
-});
 
-// History part of code ---------------------------------------
-document.addEventListener("DOMContentLoaded", function () {
+    // Authentication check and chat history loading
     fetch('/api/is_authenticated')
         .then(response => response.json())
         .then(data => {
+            const chatHistoryElement = document.getElementById('chat-history');
+            if (!chatHistoryElement) {
+                console.error('No element with ID chat-history found');
+                return;
+            }
+
             if (data.authenticated) {
-                document.getElementById('chat-history').classList.remove('hidden');
+                chatHistoryElement.classList.remove('hidden');
                 loadChatHistory(); // Load chat history if the user is authenticated
             } else {
-                document.getElementById('chat-history').classList.add('hidden');
+                chatHistoryElement.classList.add('hidden');
             }
         })
         .catch(error => console.error('Error verifying authentication status:', error));
 });
 
+// History part of code ---------------------------------------
+
+
 function loadChatHistory() {
-    fetch('/api/get_user_chats') // Ensure this endpoint is defined in your Flask app
+    fetch('/history/get_user_chats')
         .then(response => response.json())
         .then(chats => {
             const chatList = document.getElementById('chat-history').querySelector('.list-unstyled');
             chatList.innerHTML = ''; // Clear existing chat list
             chats.forEach(chat => {
                 const listItem = document.createElement('li');
-                listItem.innerHTML = `<a href="javascript:void(0);" onclick="selectChat(${chat.id})">${chat.title}</a>`;
+                listItem.innerHTML = `
+                  <div class="chat-entry">
+                    <a href="javascript:void(0);" onclick="selectChat(${chat.id})">${chat.title}</a>
+                    <button class="delete-chat-btn" onclick="deleteChat(${chat.id})">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </div>`;
                 chatList.appendChild(listItem);
             });
         })
         .catch(error => console.error('Error loading chat history:', error));
+} 
+
+function deleteChat(chatId) {
+    if (!confirm("Are you sure you want to delete this chat?")) {
+        return; // Stop if the user does not confirm
+    }
+
+    fetch(`/history/delete_chat?chat_id=${chatId}`, { method: 'DELETE' })
+        .then(response => {
+            if (response.ok) {
+                loadChatHistory(); // Reload the chat history to reflect the deletion
+            } else {
+                throw new Error('Failed to delete chat');
+            }
+        })
+        .catch(error => console.error('Error deleting chat:', error));
 }
 
 function selectChat(chatId) {
-    fetch(`/api/get_chat_history?chat_id=${chatId}`)
+    fetch(`/history/get_chat_history?chat_id=${chatId}`)
         .then(response => response.json())
         .then(messages => {
             // Clear current messages
