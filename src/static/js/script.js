@@ -29,29 +29,6 @@ function appendMessage(name, img, side, text, timestamp = formatDate(new Date())
     msgerChat.scrollTop += 500;
 }
 
-function sendMessageToBackend(chatId, userId, text, side, timestamp) {
-    fetch('/history/send_message', {
-        method: "POST",
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            chat_id: chatId,
-            user_id: userId, // Ensure your backend handles authentication to associate the message with the correct user
-            message_type: side === "left" ? "bot" : "user",
-            text: text,
-            timestamp: timestamp, // Your backend might automatically set the timestamp
-        })
-    })
-        .then(response => response.json())
-        .then(data => {
-            console.log("Message sent successfully:", data);
-        })
-        .catch(error => {
-            console.error("Error sending message:", error);
-        });
-}
-
 // Function to handle file submission and upload
 function fileSubmit() {
     const formData = new FormData();
@@ -106,13 +83,12 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 // History part of code ---------------------------------------
-function getCurrentChat() {
+function getCurrentChat(callback) {
     fetch('/get_current_chat')
         .then(response => response.json())
         .then(data => {
             if (data.chat_id) {
-                window.currentChatId = data.chat_id;
-                selectChat(window.currentChatId);
+                callback(data.chat_id);  // Pass the chat_id to the callback function
             } else {
                 // Handle no active chat session, which may involve creating one or prompting the user to select one
             }
@@ -121,25 +97,55 @@ function getCurrentChat() {
 }
 
 function loadChatHistory() {
-    fetch('/history/get_user_chats')
-        .then(response => response.json())
-        .then(chats => {
-            const chatList = document.getElementById('chat-history').querySelector('.list-unstyled');
-            chatList.innerHTML = ''; // Clear existing chat list        
-            chats.forEach(chat => {
-                const title = chat.id === getCurrentChat() ? chat.title : "Selected chat: " + chat.title;
-                const listItem = document.createElement('li');
-                listItem.innerHTML = `
-                  <div class="chat-entry">
-                    <a href="javascript:void(0);" onclick="selectChat(${chat.id})">${title}</a>
-                    <button class="delete-chat-btn" onclick="deleteChat(${chat.id})">
-                      <i class="fas fa-trash"></i>
-                    </button>
-                  </div>`;
-                chatList.appendChild(listItem);
-            });
-        })
-        .catch(error => console.error('Error loading chat history:', error));
+    getCurrentChat(currentID => {
+        fetch('/history/get_user_chats')
+            .then(response => response.json())
+            .then(chats => {
+                const chatList = document.getElementById('chat-history').querySelector('.list-unstyled');
+                chatList.innerHTML = ''; // Clear existing chat list
+                chats.reverse().forEach(chat => {
+                    const title = chat.id === currentID ? `Selected chat: ${chat.title}` : chat.title;
+                    const listItem = document.createElement('li');
+                    listItem.classList.add('chat-entry');
+                    if (chat.id === currentID) {
+                        listItem.classList.add('selected-chat');
+                    }
+                    listItem.innerHTML = `
+                        <div class="chat-entry">
+                            <a href="javascript:void(0);" onclick="selectChat(${chat.id})">${title}</a>
+                            <button class="delete-chat-btn" onclick="deleteChat(${chat.id})">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>`;
+                    chatList.appendChild(listItem);
+                });
+
+                // After loading chats, if there is a current chat ID, select it
+                if (currentID) {
+                    selectChat(currentID);
+                }
+            })
+            .catch(error => console.error('Error loading chat history:', error));
+    });
+}
+
+function updateChatList(chats, currentID) {
+    const chatList = document.getElementById('chat-history').querySelector('.list-unstyled');
+    chatList.innerHTML = '';
+
+    chats.reverse().forEach(chat => {
+        const title = chat.id === currentID ? `Selected chat: ${chat.title}` : chat.title;
+        const listItem = document.createElement('li');
+        listItem.innerHTML = `
+            <div class="chat-entry ${chat.id === currentID ? 'selected-chat' : ''}">
+                <a href="javascript:void(0);" onclick="selectChat(${chat.id})">${title}</a>
+                <button class="delete-chat-btn" onclick="deleteChat(${chat.id})">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        `;
+        chatList.appendChild(listItem);
+    });
 }
 
 function deleteChat(chatId) {
@@ -177,13 +183,10 @@ function selectChat(chatId) {
             }
         })
         .then(data => {
-            console.log(data.message);
-
             // After setting the current chat ID, get the chat history
             return fetch(`/history/get_chat_history?chat_id=${chatId}`);
         })
         .then(response => {
-            console.log(response);
             return response.json();
         })
         .then(messages => {
@@ -209,6 +212,13 @@ function selectChat(chatId) {
             });
         })
         .catch(error => console.error('Error loading chat messages:', error));
+
+    // After fetching chats, update the list
+    fetch('/history/get_user_chats')
+        .then(response => response.json())
+        .then(chats => {
+            updateChatList(chats, chatId); // Pass the current chat ID
+        });
 }
 // Hrihoriev add
 

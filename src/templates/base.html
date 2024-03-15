@@ -17,9 +17,9 @@
 
     <body>
         <div id="chat-history" class="sidebar">
+            <!-- Within the chat-history sidebar -->
             <ul class="list-unstyled text-left">
-                <!-- Placeholders for dynamic content -->
-                <!-- More placeholders as needed -->
+                <!-- Chat list items will be added here dynamically via JavaScript -->
             </ul>
         </div>
 
@@ -47,14 +47,18 @@
                 <div id="predictionResult" class="msg-text"></div>
             </main>
 
-        <!-- Форма з кнопкою "Вихід" -->
-        <form id="fileUploadForm" class="msger-inputarea" method="post" enctype="multipart/form-data">
-            <input type="file" id="imageInput" name="file" accept="image/*" style="display:none">
-            <label for="imageInput" class="msger-send-btn">Upload Image</label>
-            <!-- Кнопка "Вихід" у формі -->
-            <button id="logoutBtnForm" class="logout-btn-form" onclick="window.location.href='/'">Exit</button>
-        </form>
-    </section>
+            <!-- Форма з кнопкою "Вихід" -->
+            <form id="fileUploadForm" class="msger-inputarea" method="post"
+                enctype="multipart/form-data">
+                <input type="file" id="imageInput" name="file" accept="image/*"
+                    style="display:none">
+                <label for="imageInput" class="msger-send-btn">Upload
+                    Image</label>
+                <!-- Кнопка "Вихід" у формі -->
+                <button id="logoutBtnForm" class="logout-btn-form"
+                    onclick="window.location.href='/'">Exit</button>
+            </form>
+        </section>
 
         <script src="{{ url_for('static', filename='js/script.js') }}"></script>
     </body>
