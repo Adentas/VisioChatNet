@@ -1,5 +1,5 @@
 # history_routes.py
-import logging
+import base64
 from datetime import datetime
 from flask import Blueprint, request, jsonify
 from werkzeug.exceptions import BadRequest
@@ -80,10 +80,18 @@ def api_get_chat_history():
                 "id": message.id,
                 "chat_id": message.chat_id,
                 "user_id": message.user_id,
-                "timestamp":message.timestamp.isoformat() if message.timestamp else datetime.now().isoformat(),
+                "timestamp": (
+                    message.timestamp.isoformat()
+                    if message.timestamp
+                    else datetime.now().isoformat()
+                ),
                 "text": message.text,
                 "message_type": message.message_type,
-                "image": 'image' if message.image is not None else None,
+                "image": (
+                    base64.b64encode(message.image).decode("utf-8")
+                    if message.image is not None
+                    else None
+                ),
             }
             for message in messages
         ]

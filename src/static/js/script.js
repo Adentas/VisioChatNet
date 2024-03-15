@@ -27,10 +27,6 @@ function appendMessage(name, img, side, text, timestamp = formatDate(new Date())
         </div>`;
     msgerChat.insertAdjacentHTML("beforeend", msgHTML);
     msgerChat.scrollTop += 500;
-    // Check if we are supposed to send this message to the backend
-    if (side === "left") { // Assuming messages from the current user appear on the "right"
-        sendMessageToBackend(currentChatId, currentUser, text, side, timestamp);
-    }
 }
 
 function sendMessageToBackend(chatId, userId, text, side, timestamp) {
@@ -70,7 +66,7 @@ function fileSubmit() {
     reader.readAsDataURL(imageFile);
 
     // Sending the image to the server
-    fetch("/upload_predict", {
+    fetch("/get_predict", {
         method: "POST",
         body: formData
     })
@@ -110,19 +106,32 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 // History part of code ---------------------------------------
-
+function getCurrentChat() {
+    fetch('/get_current_chat')
+        .then(response => response.json())
+        .then(data => {
+            if (data.chat_id) {
+                window.currentChatId = data.chat_id;
+                selectChat(window.currentChatId);
+            } else {
+                // Handle no active chat session, which may involve creating one or prompting the user to select one
+            }
+        })
+        .catch(error => console.error('Error retrieving current chat:', error));
+}
 
 function loadChatHistory() {
     fetch('/history/get_user_chats')
         .then(response => response.json())
         .then(chats => {
             const chatList = document.getElementById('chat-history').querySelector('.list-unstyled');
-            chatList.innerHTML = ''; // Clear existing chat list
+            chatList.innerHTML = ''; // Clear existing chat list        
             chats.forEach(chat => {
+                const title = chat.id === getCurrentChat() ? chat.title : "Selected chat: " + chat.title;
                 const listItem = document.createElement('li');
                 listItem.innerHTML = `
                   <div class="chat-entry">
-                    <a href="javascript:void(0);" onclick="selectChat(${chat.id})">${chat.title}</a>
+                    <a href="javascript:void(0);" onclick="selectChat(${chat.id})">${title}</a>
                     <button class="delete-chat-btn" onclick="deleteChat(${chat.id})">
                       <i class="fas fa-trash"></i>
                     </button>
@@ -151,25 +160,52 @@ function deleteChat(chatId) {
 
 function selectChat(chatId) {
     console.log(`selectChat called with chatId: ${chatId}`);
-    fetch(`/history/get_chat_history?chat_id=${chatId}`)
+
+    // Update the current chat ID on the backend
+    fetch('/set_current_chat', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ chat_id: chatId })
+    })
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                throw new Error('Failed to set current chat');
+            }
+        })
+        .then(data => {
+            console.log(data.message);
+
+            // After setting the current chat ID, get the chat history
+            return fetch(`/history/get_chat_history?chat_id=${chatId}`);
+        })
         .then(response => {
             console.log(response);
             return response.json();
         })
         .then(messages => {
-            // Clear current messages
             const msgerChat = document.querySelector('.msger-chat');
-            msgerChat.innerHTML = '';
+            msgerChat.innerHTML = '';  // Clear current messages
 
-            // Append each message to the chat
             messages.forEach(msg => {
-                console.log(msg);
                 const side = msg.message_type === "bot" ? "left" : "right";
-                // Assuming 'name' and 'img' are properly set for both bot and user messages
-                // You might need to adjust how 'img' is set based on your data structure
-                const img = msg.message_type === "bot" ? BOT_IMG : PERSON_IMG; // Use your constants or logic to set the correct image
+                const img = msg.message_type === "bot" ? BOT_IMG : PERSON_IMG;
                 const name = msg.message_type === "bot" ? BOT_NAME : PERSON_NAME;
-                appendMessage(name, img, side, msg.text, msg.timestamp);
+
+                // Check if the message has text content and append it
+                if (msg.text) {
+                    appendMessage(name, img, side, msg.text, formatDate(new Date(msg.timestamp)));
+                }
+
+                // Check if the message has an image and append it
+                if (msg.image) {
+                    // When the server sends the image as a Base64 string
+                    const imageHtml = `<img src="data:image/png;base64,${msg.image}" alt="Sent image" style="width: 100%;">`; // Ensure the MIME type matches your image data
+                    appendMessage(name, img, side, imageHtml, formatDate(new Date(msg.timestamp)));
+                }
             });
         })
         .catch(error => console.error('Error loading chat messages:', error));
@@ -213,7 +249,7 @@ function openSignupModal() {
 // Функція закриття модального вікна реєстрації
 function closeSignupModal() {
     document.getElementById('signupModal').style.display = 'none';
-  }
+}
 
 // Функція, яка перевіряє, чи користувач увійшов
 function checkAuthStatus() {
@@ -231,7 +267,7 @@ function updateNavigationMenu() {
     logoutButton.textContent = 'Log Out';
     logoutButton.className = 'Logout';
     logoutButton.href = '#'; // Додайте URL для виходу з системи
-    logoutButton.onclick = function() {
+    logoutButton.onclick = function () {
         isLoggedIn = false; // Встановлюємо значення isLoggedIn на false при натисканні кнопки "Log Out"
         var logoutButton = document.querySelector('.Logout');
         if (logoutButton) {

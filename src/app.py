@@ -6,7 +6,7 @@ from src.database.repository import start_chat, send_message
 from src.auth_routes import auth_bp
 from src.database.models import User
 
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify, render_template, session
 from flask_login import LoginManager, current_user
 from src.routes.history_routes import history_bp
 from PIL import Image
@@ -20,7 +20,7 @@ login_manager.login_view = "auth.login"
 app.register_blueprint(auth_bp, url_prefix="/auth")
 app.register_blueprint(history_bp, url_prefix="/history")
 
-# model = load_model('src/ai/CIFAR_10.hdf5')
+# model = load_model('src/ai/CIFAR_10.hdf5') Dima is the best! FEAT: Maria
 
 
 @login_manager.user_loader
@@ -30,7 +30,6 @@ def load_user(user_id):
 
 
 model = load_model("../src/ai/CIFAR_10.hdf5")
-chat_id = -1
 
 
 def preprocess_image(uploaded_file):
@@ -47,15 +46,23 @@ def home():
     return render_template("home/home.html")
 
 
-def get_predictions(image):
-    if image is not None:
+@app.route("/get_predict", methods=["POST"])
+def get_predictions():
+    uploaded_file = request.files.get("file")
+    if uploaded_file is not None:
         print("Trying to write image in databes")
         if current_user.is_authenticated:
             print("User is authorized")
             db = get_db()
-            send_message(db, chat_id, current_user.id, "user", image=image)
+            send_message(
+                db,
+                session.get("current_chat_id"),
+                current_user.id,
+                "user",
+                image=uploaded_file,
+            )
         # Processing the image and getting predictions from the model
-        processed_image = preprocess_image(image)
+        processed_image = preprocess_image(uploaded_file)
         prediction = model.predict(processed_image)[0]
 
         # Obtaining indices and probabilities of the top 3 classes
@@ -90,33 +97,55 @@ def get_predictions(image):
             )
 
         # Write the bot's response to the database
-        if current_user.is_authenticated and chat_id:
+        if current_user.is_authenticated and session.get("current_chat_id"):
             db = get_db()
             send_message(
                 db=db,
-                chat_id=chat_id,
+                chat_id=session.get("current_chat_id"),
                 user_id=current_user.id,  # Use bot's user ID if it's different
                 message_type="bot",
                 text=response_message,
             )
 
-        return response_message
+        return jsonify({"result": response_message})
 
 
-@app.route("/upload_predict", methods=["POST", "GET"])
+@app.route("/upload_predict", methods=["GET"])
 def upload_predict():
     if current_user.is_authenticated:
-        # Start or retrieve a chat session for authenticated users
-        db = get_db()  # Ensure this gets an active session
-        chat = start_chat(db, user_id=current_user.id)
-        global chat_id
-        chat_id = chat.id
-
-    if request.method == "POST":
-        uploaded_file = request.files.get("file")
-        return jsonify({"result": get_predictions(uploaded_file)})
-
+        api_start_chat()
     return render_template("base.html")
+
+
+@app.route("/start_chat", methods=["POST"])
+def api_start_chat():
+    user_id = current_user.id
+    db = get_db()
+    chat = start_chat(db, user_id=user_id)
+    if chat:
+        session["current_chat_id"] = chat.id  # Store chat_id in the session
+        return jsonify({"chat_id": chat.id}), 200
+    else:
+        return jsonify({"error": "Failed to start chat"}), 400
+
+
+@app.route("/set_current_chat", methods=["POST"])
+def set_current_chat():
+    chat_id = request.json.get("chat_id")
+    if chat_id:
+        session["current_chat_id"] = chat_id  # Store chat_id in the session
+        return jsonify({"message": "Current chat set successfully"}), 200
+    else:
+        return jsonify({"error": "Chat ID is required"}), 400
+
+
+@app.route("/get_current_chat")
+def get_current_chat():
+    chat_id = session.get("current_chat_id")
+    if chat_id:
+        return jsonify({"chat_id": chat_id}), 200
+    else:
+        return jsonify({"error": "No active chat"}), 404
 
 
 @app.route("/api/is_authenticated")
