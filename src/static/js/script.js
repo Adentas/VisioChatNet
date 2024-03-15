@@ -28,7 +28,7 @@ function appendMessage(name, img, side, text, timestamp = formatDate(new Date())
     msgerChat.insertAdjacentHTML("beforeend", msgHTML);
     msgerChat.scrollTop += 500;
     // Check if we are supposed to send this message to the backend
-    if (side === "right") { // Assuming messages from the current user appear on the "right"
+    if (side === "left") { // Assuming messages from the current user appear on the "right"
         sendMessageToBackend(currentChatId, currentUser, text, side, timestamp);
     }
 }
@@ -89,24 +89,24 @@ document.addEventListener("DOMContentLoaded", function () {
         imageInput.addEventListener("change", fileSubmit);
     }
 
-    // Authentication check and chat history loading
+    // Load chat history for authenticated users
     fetch('/api/is_authenticated')
         .then(response => response.json())
         .then(data => {
-            const chatHistoryElement = document.getElementById('chat-history');
-            if (!chatHistoryElement) {
-                console.error('No element with ID chat-history found');
-                return;
-            }
-
             if (data.authenticated) {
-                chatHistoryElement.classList.remove('hidden');
-                loadChatHistory(); // Load chat history if the user is authenticated
+                // Assume loadChatHistory function will load the list of chats
+                loadChatHistory();
             } else {
-                chatHistoryElement.classList.add('hidden');
+                // Hide chat history for unauthenticated users
+                document.getElementById('chat-history').classList.add('hidden');
             }
         })
         .catch(error => console.error('Error verifying authentication status:', error));
+
+    // Automatically select the initial chat session for new users
+    if (isNewUser()) { // Implement this check based on your application's logic
+        selectChat(initialChatId); // Replace initialChatId with the actual ID
+    }
 });
 
 // History part of code ---------------------------------------
@@ -131,7 +131,7 @@ function loadChatHistory() {
             });
         })
         .catch(error => console.error('Error loading chat history:', error));
-} 
+}
 
 function deleteChat(chatId) {
     if (!confirm("Are you sure you want to delete this chat?")) {
@@ -150,8 +150,12 @@ function deleteChat(chatId) {
 }
 
 function selectChat(chatId) {
+    console.log(`selectChat called with chatId: ${chatId}`);
     fetch(`/history/get_chat_history?chat_id=${chatId}`)
-        .then(response => response.json())
+        .then(response => {
+            console.log(response);
+            return response.json();
+        })
         .then(messages => {
             // Clear current messages
             const msgerChat = document.querySelector('.msger-chat');
@@ -159,6 +163,7 @@ function selectChat(chatId) {
 
             // Append each message to the chat
             messages.forEach(msg => {
+                console.log(msg);
                 const side = msg.message_type === "bot" ? "left" : "right";
                 // Assuming 'name' and 'img' are properly set for both bot and user messages
                 // You might need to adjust how 'img' is set based on your data structure
