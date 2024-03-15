@@ -13,7 +13,7 @@
     <div class="top-bar">
       <nav class="menu-options" id="navigation">
         <img loading="lazy" src="https://cdn.builder.io/api/v1/image/assets/TEMP/237d2afd3c4ae9419fa7a21ef7abd7e5534ce965d8365a6764fe1fd38dc4ec2f?apiKey=b26021675ada455fb198954b077b3b88&" class="brand-logo" />
-        <div class="nav-item" onclick="scrollToTop()">Home</div>
+        <a href="home.html" class="Home" onclick="scrollToTop()">Home</a>
         <div class="About" onclick="scrollToAbout()">About</div>
         <div class="Contacts" onclick="scrollToContacts()">Contacts</div>
       </nav>
@@ -80,8 +80,8 @@
     <span class="close" onclick="closeModal()">&times;</span>
     <!-- Сюди додайте вашу форму логіну -->
     <h2 class="section-title">Login</h2>
-    <form action="login_handler.php" method="POST" class="login-form">
-      <input type="email" name="email" placeholder="Email" required>
+    <form action="/auth/login" method="POST" class="login-form">
+      <input type="username" name="username" placeholder="Username" required>
       <input type="password" name="password" placeholder="Password" required>
       <button type="submit" class="cta-button Login">Login</button>
     </form>
@@ -94,7 +94,7 @@
     <span class="close" onclick="closeSignupModal()">&times;</span>
     <!-- Форма реєстрації -->
     <h2 class="section-title">Sign Up</h2>
-    <form action="registration_handler.php" method="POST" class="registration-form">
+    <form action="/auth/register" method="POST" class="registration-form">
       <input type="text" name="username" placeholder="Username" required>
       <input type="email" name="email" placeholder="Email" required>
       <input type="password" name="password" placeholder="Password" required>
@@ -103,7 +103,7 @@
   </div>
 </div>
 
-<script src="static/js/script.js"></script>
+<script src="/static/js/script.js"></script>
 
 </body>
 </html>
