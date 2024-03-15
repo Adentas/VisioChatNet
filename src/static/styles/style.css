@@ -215,6 +215,10 @@ body {
   background-color: #fcfcfe;
 }
 
+.hidden {
+  display: none !important;
+}
+
 .logout-btn {
   position: absolute;
   top: 10px;

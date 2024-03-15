@@ -40,13 +40,16 @@ class Chat(Base):
     user_id = Column(Integer, ForeignKey("users.id"))
     title = Column(String, nullable=False)
     user = relationship("User", back_populates="chats")
-    messages = relationship("Message", order_by="Message.timestamp")
+    messages = relationship(
+        "Message", back_populates="chat", cascade="all, delete-orphan"
+    )
 
 
 class Message(Base):
     __tablename__ = "messages"
     id = Column(Integer, primary_key=True)
     chat_id = Column(Integer, ForeignKey("chats.id"))
+    chat = relationship("Chat", back_populates="messages")
     user_id = Column(Integer, ForeignKey("users.id"))
     timestamp = Column(DateTime)
     text = Column(Text, nullable=True)
