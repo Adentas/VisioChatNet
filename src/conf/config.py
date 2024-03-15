@@ -7,7 +7,9 @@ load_dotenv(".env", encoding="utf-8")
 
 class Config:
     SQLALCHEMY_DATABASE_URI: str = (
-        "postgresql+psycopg2://user:password@localhost:5432/postgres"
+        f"postgresql://{os.environ.get('POSTGRES_USER')}:{os.environ.get('POSTGRES_PASSWORD')}@"
+        f"{os.environ.get('POSTGRES_HOST')}:{os.environ.get('POSTGRES_PORT')}/"
+        f"{os.environ.get('POSTGRES_DB')}?sslmode=require"
     )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     postgres_user = os.environ.get("POSTGRES_USER")
