@@ -104,8 +104,8 @@ function refreshChatListCache(callback) {
     fetch('/history/get_user_chats')
         .then(response => response.json())
         .then(chats => {
-            chatListCache = chats; // Update the cache
-            if (callback) callback(chats);
+            chatListCache = chats.reverse(); // Update the cache and reverse the order
+            if (callback) callback(chatListCache);
         })
         .catch(error => console.error('Error fetching chat list:', error));
 }
@@ -136,7 +136,7 @@ function updateChatList(chats, currentID) {
     });
 
     // Then, add chats to the list and mark the selected one
-    chats.slice().reverse().forEach(chat => {
+    chats.forEach(chat => {
         const title = chat.title;
         const listItem = document.createElement('li');
         listItem.classList.add('chat-entry');
@@ -144,13 +144,15 @@ function updateChatList(chats, currentID) {
             listItem.classList.add('selected-chat'); // Mark the current chat as selected
         }
         listItem.innerHTML = `
-            <div>
-                <a href="javascript:void(0);" onclick="selectChat(${chat.id})">${title}</a>
-                <button class="delete-chat-btn" onclick="deleteChat(${chat.id})">
-                    <i class="fas fa-trash"></i>
-                </button>
-            </div>
-        `;
+    <div class="chat-entry">
+        <div class="chat-info">
+            <a href="javascript:void(0);" onclick="selectChat(${chat.id})">${chat.title}</a>
+        </div>
+        <button class="delete-chat-btn" onclick="deleteChat(${chat.id})" title="Delete chat">
+            <i class="fas fa-trash-alt"></i>
+        </button>
+    </div>
+`;
         chatList.appendChild(listItem);
     });
 
@@ -199,21 +201,18 @@ function deleteChat(chatId) {
                 // Remove the chat from the cache
                 chatListCache.splice(indexToDelete, 1);
 
-                // Since we display the chats in reverse order, calculate the next chat index accordingly
-                let nextIndex = chatListCache.length - indexToDelete - 1;
-                // If the deleted chat was the last one, select the new last chat
-                if (nextIndex >= chatListCache.length) {
-                    nextIndex = chatListCache.length - 1;
-                }
-
-                // Get the next chat ID after deletion to select
+                // Select the next chat ID based on the remaining chats
                 let nextChatId = null;
-                if (chatListCache.length > 0 && nextIndex >= 0) {
-                    nextChatId = chatListCache[nextIndex].id;
+                // If the deleted chat was not the last in the list, select the next chat
+                if (indexToDelete < chatListCache.length) {
+                    nextChatId = chatListCache[indexToDelete].id; // Select the next chat
+                } else if (indexToDelete > 0) {
+                    // If it was the last chat, select the previous chat
+                    nextChatId = chatListCache[indexToDelete - 1].id;
                 }
 
                 // Update the visual chat list and select the new chat
-                updateChatList(chatListCache, nextChatId); // Pass a reversed copy for rendering
+                updateChatList(chatListCache, nextChatId);
                 if (nextChatId !== null) {
                     selectChat(nextChatId, true);
                 }
