@@ -30,8 +30,7 @@
 
             <main class="msger-chat">
                 <div class="msg left-msg">
-                    <div class="msg-img"
-                        style="background-image: url('../static/styles/img/robot.svg')"></div>
+                    <div class="msg-img" style="background-image: url('../static/styles/img/robot.svg')"></div>
 
                     <div class="msg-bubble">
                         <div class="msg-info">
@@ -51,8 +50,8 @@
         <form id="fileUploadForm" class="msger-inputarea" method="post" enctype="multipart/form-data">
             <input type="file" id="imageInput" name="file" accept="image/*" style="display:none">
             <label for="imageInput" class="msger-send-btn">Upload Image</label>
-            <!-- Кнопка "Вихід" у формі -->
-            <button id="logoutBtnForm" class="logout-btn-form" onclick="window.location.href='/'">Exit</button>
+            <!-- Кнопка "back" у формі -->
+            <button type="button" id="backBtnForm" class="back-btn-form" onclick="window.location.href='/'">Back</button>
         </form>
     </section>
 

@@ -1,11 +1,14 @@
-from flask import Blueprint, request, render_template, redirect, url_for, flash
-from flask_login import login_user, logout_user, login_required
+from flask import Blueprint, request, render_template, redirect, url_for, flash, jsonify
+from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from src.database.db import get_db, SessionLocal
-from src.database.models import User
+from src.models.models import User
 
 auth_bp = Blueprint('auth', __name__)
 
+@auth_bp.route("/is_authenticated")
+def is_authenticated():
+    return jsonify({"authenticated": current_user.is_authenticated})
 
 @auth_bp.route('/register', methods=['GET', 'POST'])
 def register():
@@ -34,7 +37,7 @@ def login():
         user = db.query(User).filter(User.username == username).first()
         if user and check_password_hash(user.password_hash, password):
             login_user(user)
-            return redirect(url_for('upload_predict'))
+            return redirect(url_for('predict.upload_predict'))
         else:
             flash('Invalid username or password')
 

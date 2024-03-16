@@ -1,6 +1,6 @@
 // Constants for image paths and names
-const BOT_IMG = "./static/styles/img/robot.svg";
-const PERSON_IMG = "./static/styles/img/user.svg";
+const BOT_IMG = "/static/styles/img/robot.svg";
+const PERSON_IMG = "/static/styles/img/user.svg";
 const BOT_NAME = "Bot";
 const PERSON_NAME = "You";
 
@@ -70,7 +70,7 @@ function fileSubmit() {
     reader.readAsDataURL(imageFile);
 
     // Sending the image to the server
-    fetch("/upload_predict", {
+    fetch("/predict/upload_predict", {
         method: "POST",
         body: formData
     })
@@ -90,7 +90,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // Load chat history for authenticated users
-    fetch('/api/is_authenticated')
+    fetch('/auth/is_authenticated')
         .then(response => response.json())
         .then(data => {
             if (data.authenticated) {
@@ -217,10 +217,43 @@ function closeSignupModal() {
 
 // Функція, яка перевіряє, чи користувач увійшов
 function checkAuthStatus() {
-    // Ваша логіка перевірки статусу авторизації користувача тут
-    var isLoggedIn = true; // Припустимо, що користувач увійшов
-    return isLoggedIn;
+    fetch('/auth/is_authenticated')
+    .then(response => response.json())
+    .then(data => {
+        const loginButton = document.querySelector('.Login');
+        const signUpButton = document.querySelector('.Sign-Up');
+        let logoutButton = document.querySelector('.Logout');
+
+        if (data.authenticated) {
+            if (!logoutButton) {
+                logoutButton = document.createElement('a');
+                logoutButton.textContent = 'Log Out';
+                logoutButton.className = 'Logout';
+                logoutButton.href = '/auth/logout'; 
+                logoutButton.onclick = function() {
+                    fetch('/auth/logout').then(() => {
+                        window.location.reload(); // Перезавантаження сторінки для оновлення стану UI
+                    });
+                };
+                document.querySelector('.sign-options').appendChild(logoutButton);
+            }
+            loginButton.style.display = 'none';
+            signUpButton.style.display = 'none';
+        } else {
+            if (logoutButton) {
+                logoutButton.parentNode.removeChild(logoutButton);
+            }
+            loginButton.style.display = 'block';
+            signUpButton.style.display = 'block';
+        }
+    })
+    .catch(error => console.error('Error verifying authentication status:', error));
 }
+
+document.addEventListener("DOMContentLoaded", function () {
+    checkAuthStatus();
+});
+
 
 // Функція для оновлення навігаційного меню в залежності від статусу авторизації користувача
 function updateNavigationMenu() {
@@ -230,7 +263,7 @@ function updateNavigationMenu() {
     var logoutButton = document.createElement('a');
     logoutButton.textContent = 'Log Out';
     logoutButton.className = 'Logout';
-    logoutButton.href = '#'; // Додайте URL для виходу з системи
+    logoutButton.href = '/auth/logout'; // Додайте URL для виходу з системи
     logoutButton.onclick = function() {
         isLoggedIn = false; // Встановлюємо значення isLoggedIn на false при натисканні кнопки "Log Out"
         var logoutButton = document.querySelector('.Logout');

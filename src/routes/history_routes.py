@@ -8,7 +8,7 @@ from flask_login import current_user
 from src.database.db import (
     get_db,
 )
-from src.database.repository import (
+from src.repository.chat_repository import (
     start_chat,
     delete_chat,
     send_message,
