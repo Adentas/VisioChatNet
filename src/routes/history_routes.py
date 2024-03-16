@@ -1,7 +1,7 @@
 # history_routes.py
 import base64
 from datetime import datetime
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, session
 from werkzeug.exceptions import BadRequest
 from sqlalchemy.orm import Session
 from flask_login import current_user
@@ -21,14 +21,33 @@ history_bp = Blueprint("history_bp", __name__)
 
 @history_bp.route("/start_chat", methods=["POST"])
 def api_start_chat():
-    user_id = request.json["user_id"]
-    db: Session = get_db()
+    user_id = current_user.id
+    db = get_db()
     chat = start_chat(db, user_id=user_id)
-    return (
-        jsonify({"chat_id": chat.id})
-        if chat
-        else jsonify({"error": "Failed to start chat"})
-    ), 400
+    if chat:
+        session["current_chat_id"] = chat.id  # Store chat_id in the session
+        return jsonify({"chat_id": chat.id}), 200
+    else:
+        return jsonify({"error": "Failed to start chat"}), 400
+
+
+@history_bp.route("/set_current_chat", methods=["POST"])
+def set_current_chat():
+    chat_id = request.json.get("chat_id")
+    if chat_id:
+        session["current_chat_id"] = chat_id  # Store chat_id in the session
+        return jsonify({"message": "Current chat set successfully"}), 200
+    else:
+        return jsonify({"error": "Chat ID is required"}), 400
+
+
+@history_bp.route("/get_current_chat")
+def get_current_chat():
+    chat_id = session.get("current_chat_id")
+    if chat_id:
+        return jsonify({"chat_id": chat_id}), 200
+    else:
+        return jsonify({"error": "No active chat"}), 404
 
 
 @history_bp.route("/send_message", methods=["POST"])

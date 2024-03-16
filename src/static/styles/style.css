@@ -293,8 +293,6 @@ body {
   transition: background-color 0.3s ease;
 }
 
-.back-btn:hover {
-  background-color: #5bc6a0; /* Змінений колір фону при наведенні */
 .logout-btn:hover {
   background-color: #5bc6a0;
   /* Змінений колір фону при наведенні */
@@ -314,7 +312,4 @@ body {
 
 .back-btn-form:hover {
   background-color: #5bc6a0; /* Змінений колір фону при наведенні */
-.logout-btn-form:hover {
-  background-color: #5bc6a0;
-  /* Змінений колір фону при наведенні */
 }
