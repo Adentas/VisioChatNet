@@ -20,4 +20,4 @@ def upload_predict():
         uploaded_file = request.files.get("file")
         return jsonify({"result": get_predictions(uploaded_file)})
 
-    return render_template("chat.html")
+    return render_template("chat/chat.html")
