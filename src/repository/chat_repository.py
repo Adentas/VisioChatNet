@@ -2,8 +2,8 @@ import logging
 from datetime import datetime
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
-from .db import get_db  # Assuming db.py contains the get_db function
-from .models import User, Chat, Message  # Assuming models.py contains our ORM models
+from ..database.db import get_db  # Assuming db.py contains the get_db function
+from ..models.models import User, Chat, Message  # Assuming models.py contains our ORM models
 from werkzeug.datastructures import FileStorage
 
 

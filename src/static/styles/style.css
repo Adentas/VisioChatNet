@@ -279,7 +279,7 @@ body {
   display: none !important;
 }
 
-.logout-btn {
+.back-btn {
   position: absolute;
   top: 10px;
   right: 20px;
@@ -293,12 +293,14 @@ body {
   transition: background-color 0.3s ease;
 }
 
+.back-btn:hover {
+  background-color: #5bc6a0; /* Змінений колір фону при наведенні */
 .logout-btn:hover {
   background-color: #5bc6a0;
   /* Змінений колір фону при наведенні */
 }
 
-.logout-btn-form {
+.back-btn-form {
   margin-left: 10px;
   background-color: #65dbb8;
   /* Змінений колір фону */
@@ -310,6 +312,8 @@ body {
   border-radius: 10px;
 }
 
+.back-btn-form:hover {
+  background-color: #5bc6a0; /* Змінений колір фону при наведенні */
 .logout-btn-form:hover {
   background-color: #5bc6a0;
   /* Змінений колір фону при наведенні */

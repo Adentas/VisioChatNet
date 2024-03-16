@@ -1,17 +1,14 @@
 import os
 
 from sqlalchemy import text
-from src.database.db import SessionLocal, get_db
-from src.database.repository import start_chat, send_message
-from src.auth_routes import auth_bp
-from src.database.models import User
-
-from flask import Flask, request, jsonify, render_template, session
-from flask_login import LoginManager, current_user
+from src.database.db import SessionLocal
+from src.routes.auth_routes import auth_bp
+from src.models.models import User
+from src.routes.predict_routes import predict_bp
 from src.routes.history_routes import history_bp
-from PIL import Image
-import numpy as np
-from tensorflow.keras.models import load_model
+
+from flask import Flask, jsonify, render_template
+from flask_login import LoginManager, current_user
 
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY")
@@ -19,144 +16,16 @@ login_manager = LoginManager(app)
 login_manager.login_view = "auth.login"
 app.register_blueprint(auth_bp, url_prefix="/auth")
 app.register_blueprint(history_bp, url_prefix="/history")
-
-# model = load_model('src/ai/CIFAR_10.hdf5') Dima is the best! FEAT: Maria
-
+app.register_blueprint(predict_bp, url_prefix='/predict')
 
 @login_manager.user_loader
 def load_user(user_id):
     db = SessionLocal()
     return db.query(User).get(int(user_id))
 
-
-model = load_model("../src/ai/CIFAR_10.hdf5")
-
-
-def preprocess_image(uploaded_file):
-    img = Image.open(uploaded_file)
-    img = img.resize((32, 32))
-    img_array = np.array(img)
-    img_array = img_array / 255.0
-    img_array = np.expand_dims(img_array, axis=0)
-    return img_array
-
-
 @app.route("/")
 def home():
     return render_template("home/home.html")
-
-
-@app.route("/get_predict", methods=["POST"])
-def get_predictions():
-    uploaded_file = request.files.get("file")
-    if uploaded_file is not None:
-        print("Trying to write image in databes")
-        if current_user.is_authenticated:
-            print("User is authorized")
-            db = get_db()
-            send_message(
-                db,
-                session.get("current_chat_id"),
-                current_user.id,
-                "user",
-                image=uploaded_file,
-            )
-        # Processing the image and getting predictions from the model
-        processed_image = preprocess_image(uploaded_file)
-        prediction = model.predict(processed_image)[0]
-
-        # Obtaining indices and probabilities of the top 3 classes
-        top3_indices = np.argsort(prediction)[-3:][::-1]
-        top3_probabilities = prediction[top3_indices]
-
-        # Classes names
-        classes = [
-            "airplane",
-            "automobile",
-            "bird",
-            "cat",
-            "deer",
-            "dog",
-            "frog",
-            "horse",
-            "ship",
-            "truck",
-        ]
-
-        # Adding the most likely class with its probability
-        most_likely_class_index = top3_indices[0]
-        most_likely_class_probability = top3_probabilities[0] * 100
-        response_message = f"I think it's a - {classes[most_likely_class_index]} with a probability {most_likely_class_probability:.2f}%.\n\n"
-
-        # Additionally, we display other classes and their probabilities
-        response_message += "Also, I have other options:\n"
-        for i, index in enumerate(top3_indices[1:], start=1):
-            class_probability = top3_probabilities[i] * 100
-            response_message += (
-                f"{i}: {classes[index]} with a probability {class_probability:.2f}%\n"
-            )
-
-        # Write the bot's response to the database
-        if current_user.is_authenticated and session.get("current_chat_id"):
-            db = get_db()
-            send_message(
-                db=db,
-                chat_id=session.get("current_chat_id"),
-                user_id=current_user.id,  # Use bot's user ID if it's different
-                message_type="bot",
-                text=response_message,
-            )
-
-        return jsonify({"result": response_message})
-
-
-@app.route("/upload_predict", methods=["GET"])
-def upload_predict():
-    if current_user.is_authenticated:
-        api_start_chat()
-    return render_template("base.html")
-
-
-@app.route("/start_chat", methods=["POST"])
-def api_start_chat():
-    user_id = current_user.id
-    db = get_db()
-    chat = start_chat(db, user_id=user_id)
-    if chat:
-        session["current_chat_id"] = chat.id  # Store chat_id in the session
-        return jsonify({"chat_id": chat.id}), 200
-    else:
-        return jsonify({"error": "Failed to start chat"}), 400
-
-
-@app.route("/set_current_chat", methods=["POST"])
-def set_current_chat():
-    chat_id = request.json.get("chat_id")
-    if chat_id:
-        session["current_chat_id"] = chat_id  # Store chat_id in the session
-        return jsonify({"message": "Current chat set successfully"}), 200
-    else:
-        return jsonify({"error": "Chat ID is required"}), 400
-
-
-@app.route("/get_current_chat")
-def get_current_chat():
-    chat_id = session.get("current_chat_id")
-    if chat_id:
-        return jsonify({"chat_id": chat_id}), 200
-    else:
-        return jsonify({"error": "No active chat"}), 404
-
-
-@app.route("/api/is_authenticated")
-def is_authenticated():
-    return jsonify({"authenticated": current_user.is_authenticated})
-
-
-@app.route("/api/current_user")
-def get_current_user():
-    return jsonify({"current_user": current_user})
-
 
 @app.route("/healthchecker")
 def healthchecker():

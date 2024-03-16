@@ -6,7 +6,7 @@ from sqlalchemy import (
     ForeignKey,
     DateTime,
     Text,
-    Boolean,
+    Boolean
 )
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker
@@ -32,6 +32,7 @@ class User(UserMixin, Base):
     is_admin = Column(Boolean, nullable=False, default=False)
     is_confirmed = Column(Boolean, nullable=False, default=False)
     confirmed_on = Column(DateTime, nullable=True)
+    
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
 
