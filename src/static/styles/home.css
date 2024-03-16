@@ -261,6 +261,13 @@ a.Home {
   display: flex;
 }
 
+.with-shadow {
+  box-shadow: 2px 2px 5px 5px rgba(0, 0, 0, 0.1); /* Затінення зліва та знизу */
+  border-radius: 50px; /* Закруглення кутів */
+  width: 600px;
+}
+
+
 @media (max-width: 991px) {
   .content-section .row {
     flex-direction: column;
@@ -533,17 +540,21 @@ sIGN */
 }
 
 .flash-messages div.error {
-  color: red;
-  background-color: transparent;
+  color: red; /* червоний колір тексту */
+  /* background-color: rgba(255, 0, 0, 0.1); */
   padding: 10px;
   margin-bottom: 15px;
-  border-radius: 5px;
+  /* border-radius: 15px 15px 0px 15px; */
+  /* border: 1px solid rgba(255, 0, 0, 0.3); Червоний напівпрозорий бордер */
+  font-family: 'Open Sans', sans-serif; /* Шрифт Open Sans */
 }
 
 .flash-messages div.success {
-  color: blue;
-  background-color: transparent;
+  color: green; /* зелений колір тексту */
+  /* background-color: rgba(0, 255, 0, 0.1); */
   padding: 10px;
   margin-bottom: 15px;
-  border-radius: 5px;
+  /* border-radius: 20px 20px 0px 0px; */
+  /* border: 1px solid rgba(0, 255, 0, 0.1); Зелений напівпрозорий бордер */
+  font-family: 'Open Sans', sans-serif; /* Шрифт Open Sans */
 }
