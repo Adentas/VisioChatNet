@@ -103,6 +103,12 @@ function loadChatHistory() {
             .then(chats => {
                 const chatList = document.getElementById('chat-history').querySelector('.list-unstyled');
                 chatList.innerHTML = ''; // Clear existing chat list
+
+                if (!chats.length) {
+                    console.log("No chats available to load.");
+                    return; // Exit if there are no chats
+                }
+
                 chats.reverse().forEach(chat => {
                     const title = chat.id === currentID ? `Selected chat: ${chat.title}` : chat.title;
                     const listItem = document.createElement('li');
@@ -120,8 +126,14 @@ function loadChatHistory() {
                     chatList.appendChild(listItem);
                 });
 
-                // After loading chats, if there is a current chat ID, select it
-                if (currentID) {
+                // After loading chats, check if currentID is present in the loaded chats
+                const currentChatExists = chats.some(chat => chat.id === currentID);
+                if (!currentChatExists && chats.length > 0) {
+                    // If currentID is not found, use the first chat's ID as current and select it
+                    const firstChatId = chats[0].id; // Since chats were reversed, the first chat is actually the last one in the original order
+                    selectChat(firstChatId);
+                } else if (currentID) {
+                    // If currentID exists, select the current chat
                     selectChat(currentID);
                 }
             })
