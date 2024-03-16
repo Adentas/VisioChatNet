@@ -1,6 +1,6 @@
 // Constants for image paths and names
-const BOT_IMG = "./static/styles/img/robot.svg";
-const PERSON_IMG = "./static/styles/img/user.svg";
+const BOT_IMG = "/static/styles/img/robot.svg";
+const PERSON_IMG = "/static/styles/img/user.svg";
 const BOT_NAME = "Bot";
 const PERSON_NAME = "You";
 
@@ -27,33 +27,6 @@ function appendMessage(name, img, side, text, timestamp = formatDate(new Date())
         </div>`;
     msgerChat.insertAdjacentHTML("beforeend", msgHTML);
     msgerChat.scrollTop += 500;
-    // Check if we are supposed to send this message to the backend
-    if (side === "left") { // Assuming messages from the current user appear on the "right"
-        sendMessageToBackend(currentChatId, currentUser, text, side, timestamp);
-    }
-}
-
-function sendMessageToBackend(chatId, userId, text, side, timestamp) {
-    fetch('/history/send_message', {
-        method: "POST",
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            chat_id: chatId,
-            user_id: userId, // Ensure your backend handles authentication to associate the message with the correct user
-            message_type: side === "left" ? "bot" : "user",
-            text: text,
-            timestamp: timestamp, // Your backend might automatically set the timestamp
-        })
-    })
-        .then(response => response.json())
-        .then(data => {
-            console.log("Message sent successfully:", data);
-        })
-        .catch(error => {
-            console.error("Error sending message:", error);
-        });
 }
 
 // Function to handle file submission and upload
@@ -70,7 +43,7 @@ function fileSubmit() {
     reader.readAsDataURL(imageFile);
 
     // Sending the image to the server
-    fetch("/upload_predict", {
+    fetch("/predict/get_predictions", {
         method: "POST",
         body: formData
     })
@@ -90,7 +63,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // Load chat history for authenticated users
-    fetch('/api/is_authenticated')
+    fetch('/auth/is_authenticated')
         .then(response => response.json())
         .then(data => {
             if (data.authenticated) {
@@ -110,69 +83,158 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 // History part of code ---------------------------------------
-
+function getCurrentChat(callback) {
+    fetch('/history/get_current_chat')
+        .then(response => response.json())
+        .then(data => {
+            if (data.chat_id) {
+                callback(data.chat_id);  // Pass the chat_id to the callback function
+            } else {
+                // Handle no active chat session, which may involve creating one or prompting the user to select one
+            }
+        })
+        .catch(error => console.error('Error retrieving current chat:', error));
+}
 
 function loadChatHistory() {
-    fetch('/history/get_user_chats')
-        .then(response => response.json())
-        .then(chats => {
-            const chatList = document.getElementById('chat-history').querySelector('.list-unstyled');
-            chatList.innerHTML = ''; // Clear existing chat list
-            chats.forEach(chat => {
-                const listItem = document.createElement('li');
-                listItem.innerHTML = `
-                  <div class="chat-entry">
-                    <a href="javascript:void(0);" onclick="selectChat(${chat.id})">${chat.title}</a>
-                    <button class="delete-chat-btn" onclick="deleteChat(${chat.id})">
-                      <i class="fas fa-trash"></i>
-                    </button>
-                  </div>`;
-                chatList.appendChild(listItem);
-            });
-        })
-        .catch(error => console.error('Error loading chat history:', error));
+    getCurrentChat(currentID => {
+        fetch('/history/get_user_chats')
+            .then(response => response.json())
+            .then(chats => {
+                const chatList = document.getElementById('chat-history').querySelector('.list-unstyled');
+                chatList.innerHTML = ''; // Clear existing chat list
+                chats.reverse().forEach(chat => {
+                    const title = chat.id === currentID ? `Selected chat: ${chat.title}` : chat.title;
+                    const listItem = document.createElement('li');
+                    listItem.classList.add('chat-entry');
+                    if (chat.id === currentID) {
+                        listItem.classList.add('selected-chat');
+                    }
+                    listItem.innerHTML = `
+                        <div class="chat-entry">
+                            <a href="javascript:void(0);" onclick="selectChat(${chat.id})">${title}</a>
+                            <button class="delete-chat-btn" onclick="deleteChat(${chat.id})">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>`;
+                    chatList.appendChild(listItem);
+                });
+
+                // After loading chats, if there is a current chat ID, select it
+                if (currentID) {
+                    selectChat(currentID);
+                }
+            })
+            .catch(error => console.error('Error loading chat history:', error));
+    });
+}
+
+function updateChatList(chats, currentID) {
+    const chatList = document.getElementById('chat-history').querySelector('.list-unstyled');
+    chatList.innerHTML = '';
+
+    chats.reverse().forEach(chat => {
+        const title = chat.id === currentID ? `Selected chat: ${chat.title}` : chat.title;
+        const listItem = document.createElement('li');
+        listItem.innerHTML = `
+            <div class="chat-entry ${chat.id === currentID ? 'selected-chat' : ''}">
+                <a href="javascript:void(0);" onclick="selectChat(${chat.id})">${title}</a>
+                <button class="delete-chat-btn" onclick="deleteChat(${chat.id})">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        `;
+        chatList.appendChild(listItem);
+    });
 }
 
 function deleteChat(chatId) {
-    if (!confirm("Are you sure you want to delete this chat?")) {
-        return; // Stop if the user does not confirm
-    }
-
-    fetch(`/history/delete_chat?chat_id=${chatId}`, { method: 'DELETE' })
-        .then(response => {
-            if (response.ok) {
-                loadChatHistory(); // Reload the chat history to reflect the deletion
-            } else {
-                throw new Error('Failed to delete chat');
+    // Fetch the current list of chats to ensure we have the latest information
+    fetch('/history/get_user_chats')
+        .then(response => response.json())
+        .then(chats => {
+            // If it's the last chat, alert and return
+            if (chats.length <= 1) {
+                alert("Cannot delete the last chat.");
+                return; // Stop the deletion process
             }
+
+            // Proceed with confirmation and deletion if not the last chat
+            if (!confirm("Are you sure you want to delete this chat?")) {
+                return; // Stop if the user does not confirm
+            }
+
+            // Perform the deletion
+            fetch(`/history/delete_chat?chat_id=${chatId}`, { method: 'DELETE' })
+                .then(response => {
+                    if (response.ok) {
+                        // Call loadChatHistory to refresh the chat list
+                        loadChatHistory();
+                    } else {
+                        throw new Error('Failed to delete chat');
+                    }
+                })
+                .catch(error => console.error('Error deleting chat:', error));
         })
-        .catch(error => console.error('Error deleting chat:', error));
+        .catch(error => console.error('Error fetching chats:', error));
 }
+
 
 function selectChat(chatId) {
     console.log(`selectChat called with chatId: ${chatId}`);
-    fetch(`/history/get_chat_history?chat_id=${chatId}`)
+
+    // Update the current chat ID on the backend
+    fetch('/history/set_current_chat', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ chat_id: chatId })
+    })
         .then(response => {
-            console.log(response);
+            if (response.ok) {
+                return response.json();
+            } else {
+                throw new Error('Failed to set current chat');
+            }
+        })
+        .then(data => {
+            // After setting the current chat ID, get the chat history
+            return fetch(`/history/get_chat_history?chat_id=${chatId}`);
+        })
+        .then(response => {
             return response.json();
         })
         .then(messages => {
-            // Clear current messages
             const msgerChat = document.querySelector('.msger-chat');
-            msgerChat.innerHTML = '';
+            msgerChat.innerHTML = '';  // Clear current messages
 
-            // Append each message to the chat
             messages.forEach(msg => {
-                console.log(msg);
                 const side = msg.message_type === "bot" ? "left" : "right";
-                // Assuming 'name' and 'img' are properly set for both bot and user messages
-                // You might need to adjust how 'img' is set based on your data structure
-                const img = msg.message_type === "bot" ? BOT_IMG : PERSON_IMG; // Use your constants or logic to set the correct image
+                const img = msg.message_type === "bot" ? BOT_IMG : PERSON_IMG;
                 const name = msg.message_type === "bot" ? BOT_NAME : PERSON_NAME;
-                appendMessage(name, img, side, msg.text, msg.timestamp);
+
+                // Check if the message has text content and append it
+                if (msg.text) {
+                    appendMessage(name, img, side, msg.text, formatDate(new Date(msg.timestamp)));
+                }
+
+                // Check if the message has an image and append it
+                if (msg.image) {
+                    // When the server sends the image as a Base64 string
+                    const imageHtml = `<img src="data:image/png;base64,${msg.image}" alt="Sent image" style="width: 100%;">`; // Ensure the MIME type matches your image data
+                    appendMessage(name, img, side, imageHtml, formatDate(new Date(msg.timestamp)));
+                }
             });
         })
         .catch(error => console.error('Error loading chat messages:', error));
+
+    // After fetching chats, update the list
+    fetch('/history/get_user_chats')
+        .then(response => response.json())
+        .then(chats => {
+            updateChatList(chats, chatId); // Pass the current chat ID
+        });
 }
 // Hrihoriev add
 
@@ -213,14 +275,47 @@ function openSignupModal() {
 // Функція закриття модального вікна реєстрації
 function closeSignupModal() {
     document.getElementById('signupModal').style.display = 'none';
-  }
+}
 
 // Функція, яка перевіряє, чи користувач увійшов
 function checkAuthStatus() {
-    // Ваша логіка перевірки статусу авторизації користувача тут
-    var isLoggedIn = true; // Припустимо, що користувач увійшов
-    return isLoggedIn;
+    fetch('/auth/is_authenticated')
+    .then(response => response.json())
+    .then(data => {
+        const loginButton = document.querySelector('.Login');
+        const signUpButton = document.querySelector('.Sign-Up');
+        let logoutButton = document.querySelector('.Logout');
+
+        if (data.authenticated) {
+            if (!logoutButton) {
+                logoutButton = document.createElement('a');
+                logoutButton.textContent = 'Log Out';
+                logoutButton.className = 'Logout';
+                logoutButton.href = '/auth/logout'; 
+                logoutButton.onclick = function() {
+                    fetch('/auth/logout').then(() => {
+                        window.location.reload(); // Перезавантаження сторінки для оновлення стану UI
+                    });
+                };
+                document.querySelector('.sign-options').appendChild(logoutButton);
+            }
+            loginButton.style.display = 'none';
+            signUpButton.style.display = 'none';
+        } else {
+            if (logoutButton) {
+                logoutButton.parentNode.removeChild(logoutButton);
+            }
+            loginButton.style.display = 'block';
+            signUpButton.style.display = 'block';
+        }
+    })
+    .catch(error => console.error('Error verifying authentication status:', error));
 }
+
+document.addEventListener("DOMContentLoaded", function () {
+    checkAuthStatus();
+});
+
 
 // Функція для оновлення навігаційного меню в залежності від статусу авторизації користувача
 function updateNavigationMenu() {
@@ -230,7 +325,7 @@ function updateNavigationMenu() {
     var logoutButton = document.createElement('a');
     logoutButton.textContent = 'Log Out';
     logoutButton.className = 'Logout';
-    logoutButton.href = '#'; // Додайте URL для виходу з системи
+    logoutButton.href = '/auth/logout'; // Додайте URL для виходу з системи
     logoutButton.onclick = function() {
         isLoggedIn = false; // Встановлюємо значення isLoggedIn на false при натисканні кнопки "Log Out"
         var logoutButton = document.querySelector('.Logout');

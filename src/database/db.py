@@ -10,7 +10,8 @@ if not SQLALCHEMY_DATABASE_URL:
     raise ValueError("No DATABASE_URL set for Flask application")
 
 # Create the SQLAlchemy engine
-engine = create_engine(SQLALCHEMY_DATABASE_URL)
+engine = create_engine(SQLALCHEMY_DATABASE_URL, pool_size=90,  # Adjust pool size here
+    max_overflow=110)  # Adjust max overflow here)
 
 # Create a SessionLocal class which will serve as a factory for new Session objects
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

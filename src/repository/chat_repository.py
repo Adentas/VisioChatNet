@@ -2,8 +2,7 @@ import logging
 from datetime import datetime
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
-from .db import get_db  # Assuming db.py contains the get_db function
-from .models import User, Chat, Message  # Assuming models.py contains our ORM models
+from ..models.models import Chat, Message  # Assuming models.py contains our ORM models
 from werkzeug.datastructures import FileStorage
 
 
@@ -40,7 +39,6 @@ def send_message(
 ):
     image_binary = image.read() if image else None
     try:
-        print("Sending message")
         new_message = Message(
             chat_id=chat_id,
             user_id=user_id,
@@ -52,11 +50,9 @@ def send_message(
         db.add(new_message)
         db.commit()
         db.refresh(new_message)
-        print("Message succesfully sent")
         return new_message
     except SQLAlchemyError as e:
         db.rollback()
-        print("Message was not sent")
         logging.error(f"Can't send message in chat_id {chat_id}: {str(e)}")
         return None
 
