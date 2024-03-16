@@ -531,3 +531,19 @@ sIGN */
 .Logout:hover {
   background-color: #FF4833; /* Змінений колір фону при наведенні */
 }
+
+.flash-messages div.error {
+  color: red;
+  background-color: transparent;
+  padding: 10px;
+  margin-bottom: 15px;
+  border-radius: 5px;
+}
+
+.flash-messages div.success {
+  color: blue;
+  background-color: transparent;
+  padding: 10px;
+  margin-bottom: 15px;
+  border-radius: 5px;
+}

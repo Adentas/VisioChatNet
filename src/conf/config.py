@@ -17,6 +17,16 @@ class Config:
     postgres_host = os.environ.get("POSTGRES_HOST")
     postgres_port = os.environ.get("POSTGRES_PORT")
     postgres_db = os.environ.get("POSTGRES_DB")
+    SECURITY_PASSWORD_SALT = os.environ.get("SECURITY_PASSWORD_SALT")
+    SECRET_KEY = os.environ.get("SECRET_KEY")
+    MAIL_USERNAME = os.environ.get("MAIL_USERNAME")
+    MAIL_PASSWORD = os.environ.get("MAIL_PASSWORD")
+    MAIL_SERVER = os.environ.get("MAIL_SERVER")
+    MAIL_DEFAULT_SENDER = os.environ.get("MAIL_DEFAULT_SENDER")
+    MAIL_PORT = 465
+    MAIL_USE_TLS = False
+    MAIL_USE_SSL = True
+    MAIL_DEBUG = False
 
 
 settings = Config()

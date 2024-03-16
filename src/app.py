@@ -6,11 +6,12 @@ from src.routes.auth_routes import auth_bp
 from src.models.models import User
 from src.routes.predict_routes import predict_bp
 from src.routes.history_routes import history_bp
+from src.utils.decorators import check_is_confirmed
+from src import app
 
 from flask import Flask, jsonify, render_template
 from flask_login import LoginManager, current_user
 
-app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY")
 login_manager = LoginManager(app)
 login_manager.login_view = "auth.login"
@@ -18,14 +19,17 @@ app.register_blueprint(auth_bp, url_prefix="/auth")
 app.register_blueprint(history_bp, url_prefix="/history")
 app.register_blueprint(predict_bp, url_prefix='/predict')
 
+
 @login_manager.user_loader
 def load_user(user_id):
     db = SessionLocal()
     return db.query(User).get(int(user_id))
 
+
 @app.route("/")
 def home():
     return render_template("home/home.html")
+
 
 @app.route("/healthchecker")
 def healthchecker():
@@ -41,4 +45,4 @@ def healthchecker():
 
 
 if __name__ == "__main__":
-    app.run(debug=True, host="127.0.0.1", port=5000)
+    app.run(debug=True, host="127.0.0.1", port=5001)
