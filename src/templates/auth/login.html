@@ -17,8 +17,8 @@
             <div class="Contacts" onclick="scrollToContacts()">Contacts</div>
           </nav>
           <nav class="sign-options">
-            <a href="registration.html" class="Sign-Up">Sign Up</a> <!-- Посилання на сторінку реєстрації -->
-            <a href="login.html" class="Login">Login</a> <!-- Посилання на сторінку входу -->
+            <a href="#" class="Sign-Up" onclick="openSignupModal()">Sign Up</a> <!-- Посилання на сторінку реєстрації -->
+            <!-- <a href="login.html" class="Login">Login</a> Посилання на сторінку входу -->
           </nav>
         </div>
         <div class="bottom-divider"></div>
@@ -63,6 +63,21 @@
       </section>
     </div>
 </footer>
+
+<!-- Модальне вікно -->
+<div id="signupModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeSignupModal()">&times;</span>
+    <!-- Форма реєстрації -->
+    <h2 class="section-title">Sign Up</h2>
+    <form action="/auth/register" method="POST" class="registration-form">
+      <input type="text" name="username" placeholder="Username" required>
+      <input type="email" name="email" placeholder="Email" required>
+      <input type="password" name="password" placeholder="Password" required>
+      <button type="submit" class="cta-button signup-button">Sign Up</button>
+    </form>
+  </div>
+</div>
 
 <script src="/static/js/script.js"></script>
 
