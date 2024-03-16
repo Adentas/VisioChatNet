@@ -149,20 +149,36 @@ function updateChatList(chats, currentID) {
 }
 
 function deleteChat(chatId) {
-    if (!confirm("Are you sure you want to delete this chat?")) {
-        return; // Stop if the user does not confirm
-    }
-
-    fetch(`/history/delete_chat?chat_id=${chatId}`, { method: 'DELETE' })
-        .then(response => {
-            if (response.ok) {
-                loadChatHistory(); // Reload the chat history to reflect the deletion
-            } else {
-                throw new Error('Failed to delete chat');
+    // Fetch the current list of chats to ensure we have the latest information
+    fetch('/history/get_user_chats')
+        .then(response => response.json())
+        .then(chats => {
+            // If it's the last chat, alert and return
+            if (chats.length <= 1) {
+                alert("Cannot delete the last chat.");
+                return; // Stop the deletion process
             }
+
+            // Proceed with confirmation and deletion if not the last chat
+            if (!confirm("Are you sure you want to delete this chat?")) {
+                return; // Stop if the user does not confirm
+            }
+
+            // Perform the deletion
+            fetch(`/history/delete_chat?chat_id=${chatId}`, { method: 'DELETE' })
+                .then(response => {
+                    if (response.ok) {
+                        // Call loadChatHistory to refresh the chat list
+                        loadChatHistory();
+                    } else {
+                        throw new Error('Failed to delete chat');
+                    }
+                })
+                .catch(error => console.error('Error deleting chat:', error));
         })
-        .catch(error => console.error('Error deleting chat:', error));
+        .catch(error => console.error('Error fetching chats:', error));
 }
+
 
 function selectChat(chatId) {
     console.log(`selectChat called with chatId: ${chatId}`);

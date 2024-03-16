@@ -16,6 +16,6 @@ def upload_predict():
     return render_template("chat/chat.html")
 
 @predict_bp.route('/get_predictions', methods=['POST'])
-def get_predictions():
+def api_get_predictions():
     uploaded_file = request.files.get("file")
     return jsonify({"result": get_predictions(uploaded_file)})
