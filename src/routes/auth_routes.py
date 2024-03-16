@@ -10,6 +10,12 @@ auth_bp = Blueprint('auth', __name__)
 def is_authenticated():
     return jsonify({"authenticated": current_user.is_authenticated})
 
+
+@auth_bp.route("/current_user")
+def get_current_user():
+    return jsonify({"current_user": current_user})
+
+
 @auth_bp.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':

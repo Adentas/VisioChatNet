@@ -11,7 +11,7 @@ from sqlalchemy import (
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker
 from sqlalchemy.dialects.postgresql import BYTEA
-from datetime import datetime
+from sqlalchemy.sql import func
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 
@@ -20,8 +20,9 @@ Base = declarative_base()
 MESSAGE_TYPE_USER = "user"
 MESSAGE_TYPE_BOT = "bot"
 
+
 class User(UserMixin, Base):
-    __tablename__ = 'users'
+    __tablename__ = "users"
 
     id = Column(Integer, primary_key=True)
     username = Column(String(50), unique=True, nullable=False)
@@ -31,12 +32,13 @@ class User(UserMixin, Base):
     is_admin = Column(Boolean, nullable=False, default=False)
     is_confirmed = Column(Boolean, nullable=False, default=False)
     confirmed_on = Column(DateTime, nullable=True)
-
+    
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
+
 
 class Chat(Base):
     __tablename__ = "chats"
@@ -55,7 +57,7 @@ class Message(Base):
     chat_id = Column(Integer, ForeignKey("chats.id"))
     chat = relationship("Chat", back_populates="messages")
     user_id = Column(Integer, ForeignKey("users.id"))
-    timestamp = Column(DateTime)
+    timestamp = Column(DateTime(timezone=True), default=func.now())
     text = Column(Text, nullable=True)
     image = Column(BYTEA, nullable=True)
     message_type = Column(String, nullable=False)

@@ -7,10 +7,7 @@ from src.models.models import User
 from src.routes.predict_routes import predict_bp
 from src.routes.history_routes import history_bp
 
-# from src.model_loader import get_model
-# model = get_model()
-
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, jsonify, render_template
 from flask_login import LoginManager, current_user
 
 app = Flask(__name__)
@@ -29,12 +26,6 @@ def load_user(user_id):
 @app.route("/")
 def home():
     return render_template("home/home.html")
-
-
-@app.route("/api/current_user")
-def get_current_user():
-    return jsonify({"current_user": current_user})
-
 
 @app.route("/healthchecker")
 def healthchecker():

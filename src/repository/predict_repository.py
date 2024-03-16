@@ -4,11 +4,10 @@ from src.model_loader import get_model
 from src.repository.chat_repository import send_message
 from src.database.db import get_db
 from src.utils.preproccss_image import preprocess_image
+from flask import session
 
 from flask import Blueprint, request, jsonify, render_template
 from flask_login import current_user
-
-chat_id = -1
 
 def get_predictions(image):
     model = get_model()
@@ -17,7 +16,9 @@ def get_predictions(image):
         if current_user.is_authenticated:
             print("User is authorized")
             db = get_db()
-            send_message(db, chat_id, current_user.id, "user", image=image)
+            send_message(
+                db, session["current_chat_id"], current_user.id, "user", image=image
+            )
         # Processing the image and getting predictions from the model
         processed_image = preprocess_image(image)
         prediction = model.predict(processed_image)[0]
@@ -54,11 +55,11 @@ def get_predictions(image):
             )
 
         # Write the bot's response to the database
-        if current_user.is_authenticated and chat_id:
+        if current_user.is_authenticated and session["current_chat_id"]:
             db = get_db()
             send_message(
                 db=db,
-                chat_id=chat_id,
+                chat_id=session["current_chat_id"],
                 user_id=current_user.id,  # Use bot's user ID if it's different
                 message_type="bot",
                 text=response_message,
