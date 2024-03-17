@@ -44,29 +44,35 @@ function appendMessage(name, img, side, text, timestamp = formatDate(new Date())
 }
 
 // Function to handle file submission and upload
+// Function to handle file submission and upload
 function fileSubmit() {
-    const formData = new FormData();
+const formData = new FormData();
     const imageFile = document.getElementById('imageInput').files[0];
-    formData.append("file", imageFile);
+        formData.append("file", imageFile);
 
-    // Displaying the image in the chat
-    const reader = new FileReader();
-    reader.onload = function (e) {
-        appendMessage(PERSON_NAME, PERSON_IMG, "right", `<img src="${e.target.result}" alt="Sent image" style="width: 100%;">`);
-    };
-    reader.readAsDataURL(imageFile);
+        // Displaying the image in the chat
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            appendMessage(PERSON_NAME, PERSON_IMG, "right", `<img src="${e.target.result}" alt="Sent image" style="width: 100%;">`);
+        };
+        reader.readAsDataURL(imageFile);
 
-    // Sending the image to the server
-    fetch("/predict/get_predictions", {
-        method: "POST",
-        body: formData
-    })
-        .then(response => response.json())
-        .then(data => {
-            appendMessage(BOT_NAME, BOT_IMG, "left", data.result);
+        // Sending the image to the server
+        fetch("/predict/get_predictions", {
+            method: "POST",
+            body: formData
         })
-        .catch(error => console.error("Error:", error));
-}
+            .then(response => response.json())
+            .then(data => {
+                // Check if server responded with an error
+                if (data.error) {
+                    appendMessage(BOT_NAME, BOT_IMG, "left", `Oops, I'm not quite sure how to handle this image format. Could you please try sending a photo in jpg or jpeg format?`);
+                } else {
+                    appendMessage(BOT_NAME, BOT_IMG, "left", data.result);
+                }
+            })
+            .catch(error => console.error("Error:", error));
+    }
 
 // Ensure this function is called after the DOM fully loads
 document.addEventListener("DOMContentLoaded", function () {
