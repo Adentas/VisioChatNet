@@ -386,3 +386,9 @@ body {
   min-height: 50px;
   /* Adjust as needed for consistent size */
 }
+
+.strong {
+  font-family: Open Sans, sans-serif;
+  font-weight: bold;
+  font-size: 15px;
+}

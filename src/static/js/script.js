@@ -11,6 +11,20 @@ function formatDate(date) {
     return `${h.slice(-2)}:${m.slice(-2)}`;
 }
 
+// Функція для заміни ключових слів у тексті на елементи з класами CSS
+function highlightKeywords(text) {
+    // Список ключових слів, які ви хочете виділити
+    const keywords = ["airplane", "automobile", "bird", "cat", "deer", "dog", "frog", "horse", "ship", "truck",];
+    
+    // Проходимося по кожному ключовому слову і замінюємо його на відповідний HTML елемент
+    keywords.forEach(keyword => {
+        const regex = new RegExp(`\\b${keyword}\\b`, 'gi'); // Створюємо регулярний вираз для пошуку ключового слова зі словесним обмеженням (\b)
+        text = text.replace(regex, `<span class="strong">${keyword}</span>`); // Замінюємо ключове слово на HTML елемент з класом "highlight"
+    });
+
+    return text;
+}
+
 // Function to append a message to the chat
 function appendMessage(name, img, side, text, timestamp = formatDate(new Date())) {
     const msgerChat = document.querySelector(".msger-chat");
@@ -19,10 +33,10 @@ function appendMessage(name, img, side, text, timestamp = formatDate(new Date())
             <div class="msg-img" style="background-image: url('${img}')"></div>
             <div class="msg-bubble">
                 <div class="msg-info">
-                    <div class="msg-info-name">${name}</div>
+                    <div class="msg-info-name" >${name}</div>
                     <div class="msg-info-time">${timestamp}</div>
                 </div>
-                <div class="msg-text">${text}</div>
+                <div class="msg-text">${highlightKeywords(text)}</div>
             </div>
         </div>`;
     msgerChat.insertAdjacentHTML("beforeend", msgHTML);
