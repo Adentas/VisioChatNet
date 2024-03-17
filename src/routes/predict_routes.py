@@ -15,7 +15,16 @@ def upload_predict():
 
     return render_template("chat/chat.html")
 
+ALLOWED_EXTENSIONS = {'jpg', 'jpeg'}
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
 @predict_bp.route('/get_predictions', methods=['POST'])
 def api_get_predictions():
     uploaded_file = request.files.get("file")
-    return jsonify({"result": get_predictions(uploaded_file)})
+    if uploaded_file and allowed_file(uploaded_file.filename):
+        return jsonify({"result": get_predictions(uploaded_file)})
+    else:
+        return jsonify({"error": "Oops, I'm not quite sure how to handle this image format. Could you please try sending a photo in jpg or jpeg format?"}), 400
