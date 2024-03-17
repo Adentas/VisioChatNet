@@ -31,6 +31,7 @@ body {
   width: 20%;
   background: #f2f2f2;
   overflow-y: auto;
+  margin-top: 20px;
 }
 
 /* Sidebar full height and on the left side */
@@ -45,6 +46,8 @@ body {
   border-right: 1px solid #ddd;
   overflow-y: auto;
   z-index: 1000;
+  padding: 10px 0;
+  /* Top and bottom padding */
 }
 
 /* Selected chat item */
@@ -83,18 +86,81 @@ body {
   font-weight: bold;
 }
 
-/* Chat delete button */
-.delete-chat-btn {
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  color: #888;
+/* Chat entry container */
+.chat-entry {
+  display: flex;
+  align-items: center;
+  /* Vertically center content */
+  justify-content: space-between;
+  /* Space between content */
+  padding: 5px 10px;
+  /* Padding around items */
+  border-bottom: 1px solid #e0e0e0;
+  /* Separator between items */
 }
 
-/* Chat delete button on hover */
-.delete-chat-btn:hover {
-  color: #ff6666;
-  /* Highlight with color on hover */
+/* Chat info styling */
+.chat-info {
+  flex-grow: 1;
+  /* Allow the chat info to grow and fill space */
+  padding-right: 10px;
+  /* Spacing before the delete button */
+}
+
+/* Chat title/link styling */
+.chat-info a {
+  text-decoration: none;
+  /* Remove underline from links */
+  color: #333;
+  /* Dark text for readability */
+  font-weight: 500;
+  /* Slightly bold */
+  display: block;
+  /* Ensure it takes up the full space for easier clicking */
+}
+
+/* Delete button */
+.delete-chat-btn {
+  margin-left: auto;
+  padding: 5px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: #cb2431;
+}
+
+/* Hover effects */
+.delete-chat-btn:hover,
+.chat-info a:hover {
+  background-color: #f8d7da;
+  /* Slight background on hover for delete */
+  border-radius: 4px;
+  /* Rounded corners for hover backgrounds */
+}
+
+/* Accessibility */
+.delete-chat-btn[aria-label] {
+  position: relative;
+}
+
+/* Tooltip styling for accessibility */
+.delete-chat-btn[aria-label]::before {
+  content: attr(aria-label);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  background-color: black;
+  color: white;
+  padding: 4px;
+  border-radius: 4px;
+  font-size: 12px;
+  display: none;
+}
+
+.delete-chat-btn[aria-label]:hover::before {
+  display: block;
 }
 
 .sidebar a {
@@ -311,5 +377,12 @@ body {
 }
 
 .back-btn-form:hover {
-  background-color: #5bc6a0; /* Змінений колір фону при наведенні */
+  background-color: #5bc6a0;
+  /* Змінений колір фону при наведенні */
+}
+
+/* Fix the height of the chat entries if needed */
+.chat-entry {
+  min-height: 50px;
+  /* Adjust as needed for consistent size */
 }
