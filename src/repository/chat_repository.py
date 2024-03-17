@@ -101,3 +101,17 @@ def delete_chat(db: Session, chat_id: int) -> bool:
         logging.error(f"Can't delete chat with chat_id {chat_id}: {str(e)}")
         db.rollback()
         return False
+
+
+def rename_chat(db: Session, chat_id: int, new_title: str) -> bool:
+    try:
+        chat = db.query(Chat).filter(Chat.id == chat_id).one_or_none()
+        if chat:
+            chat.title = new_title
+            db.commit()
+            return True
+        return False
+    except SQLAlchemyError as e:
+        logging.error(f"Can't rename chat with chat_id {chat_id}: {str(e)}")
+        db.rollback()
+        return False
