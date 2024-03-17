@@ -60,7 +60,7 @@ def register():
         subject = "Please confirm your email"
         send_email(user.email, subject, html)
 
-        login_user(user)
+        # login_user(user)
         db.close()
         flash("A confirmation email has been sent via email.", "success")
         # return redirect(url_for('auth.login'))
@@ -123,6 +123,7 @@ def confirm_email(token):
     db.close()
     # return redirect(url_for("home"))
     return render_template('auth/login.html')
+    # return redirect(url_for('predict.upload_predict'))
 
 
 # @auth_bp.route("/inactive")
