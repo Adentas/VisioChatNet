@@ -163,6 +163,48 @@ body {
   display: block;
 }
 
+/* Rename button */
+.rename-chat-btn {
+  margin-left: 10px; 
+  padding: 5px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: #007bff;
+}
+
+/* Hover effects for rename */
+.rename-chat-btn:hover,
+.chat-info a:hover {
+  background-color: #cce5ff; 
+  border-radius: 4px;
+}
+
+/* Accessibility for rename button */
+.rename-chat-btn[aria-label] {
+  position: relative;
+}
+
+/* Tooltip styling for rename button */
+.rename-chat-btn[aria-label]::before {
+  content: attr(aria-label);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  background-color: black;
+  color: white;
+  padding: 4px;
+  border-radius: 4px;
+  font-size: 12px;
+  display: none;
+}
+
+.rename-chat-btn[aria-label]:hover::before {
+  display: block;
+}
+
 .sidebar a {
   color: #000000;
   /* Колір тексту чорний */
