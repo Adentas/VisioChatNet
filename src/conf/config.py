@@ -2,8 +2,8 @@ import os
 from flask import Flask
 from dotenv import load_dotenv
 
-load_dotenv(".env", encoding="utf-8")
-
+# load_dotenv(".env", encoding="utf-8")
+load_dotenv()
 
 class Config:
     SQLALCHEMY_DATABASE_URI: str = (
@@ -24,9 +24,8 @@ class Config:
     MAIL_SERVER = os.environ.get("MAIL_SERVER")
     MAIL_DEFAULT_SENDER = os.environ.get("MAIL_DEFAULT_SENDER")
     MAIL_PORT = 465
-    MAIL_USE_TLS = False
     MAIL_USE_SSL = True
-    MAIL_DEBUG = False
 
 
 settings = Config()
+

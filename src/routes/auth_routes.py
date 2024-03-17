@@ -63,7 +63,7 @@ def register():
         login_user(user)
         db.close()
         flash("A confirmation email has been sent via email.", "success")
-        # return redirect(url_for("auth.inactive"))
+        # return redirect(url_for('auth.login'))
         return render_template('auth/login.html')
 
     return render_template('auth/register.html')
