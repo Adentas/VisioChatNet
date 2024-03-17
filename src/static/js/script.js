@@ -205,6 +205,9 @@ function updateChatList(chats, currentID) {
         <div class="chat-info">
             <a href="javascript:void(0);" onclick="selectChat(${chat.id})">${chat.title}</a>
         </div>
+        <button class="rename-chat-btn" onclick="renameChat(${chat.id})" title="Rename chat">
+            <i class="fas fa-pencil-alt"></i>
+        </button>
         <button class="delete-chat-btn" onclick="deleteChat(${chat.id})" title="Delete chat">
             <i class="fas fa-trash-alt"></i>
         </button>
