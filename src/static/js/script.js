@@ -82,6 +82,14 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 
+// Event listener for F2 keydown to rename chat
+document.addEventListener('keydown', function (event) {
+    if (event.key === 'F2') {
+        // Prevent the default action to avoid any conflicts
+        event.preventDefault();
+        renameChat();
+    }
+});
 // History part of code ---------------------------------------
 // Global cache for chat list
 let chatListCache = null;
@@ -91,6 +99,7 @@ function getCurrentChat(callback) {
         .then(response => response.json())
         .then(data => {
             if (data.chat_id) {
+                console.log(`Current Chat is: ${data.chat_id}`);
                 callback(data.chat_id);  // Pass the chat_id to the callback function
             } else {
                 // Handle no active chat session, which may involve creating one or prompting the user to select one
@@ -124,6 +133,40 @@ function loadChatHistory() {
             });
         }
     });
+}
+
+function renameChat() {
+    getCurrentChat(currentID => {
+        let newChatName = prompt('Enter the new name for the chat:');
+        if (newChatName) {
+            fetch('/history/rename_chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ chat_id: currentID, new_name: newChatName }),
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok.');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.message) { // This should match what the backend sends on success
+                        // Update the name in the chatListCache
+                        const chatIndex = chatListCache.findIndex(chat => chat.id === currentID);
+                        if (chatIndex !== -1) {
+                            chatListCache[chatIndex].title = newChatName;
+                            loadChatHistory(); // You may want to also update the display to show the new chat name
+                        }
+                    } else {
+                        console.error('Failed to rename chat:', data.error);
+                    }
+                })
+                .catch(error => console.error('Error renaming chat:', error));
+        }
+    })
 }
 
 function updateChatList(chats, currentID) {
@@ -233,13 +276,9 @@ function debounceSelectChat(chatId, delay = 500) { // 500 ms delay by default
 }
 
 // Function to select a chat and update the cache
-function selectChat(chatId, fromUserInteraction = false) {
-    console.log(`selectChat called with chatId: ${chatId}`);
-
-    if (fromUserInteraction) {
-        // Update the current chat ID on the backend if the selection is from user interaction
-        setCurrentChat(chatId);
-    }
+function selectChat(chatId) {
+    // Use the setCurrentChat function like this:
+    setCurrentChat(chatId);
 
     // Get the chat history for the selected chat
     fetchChatMessages(chatId);
@@ -248,17 +287,20 @@ function selectChat(chatId, fromUserInteraction = false) {
     updateVisualSelectedChat(chatId);
 }
 
-function setCurrentChat(chatId) {
+function setCurrentChat(chatId, callback) {
     fetch('/history/set_current_chat', {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ chat_id: chatId })
+        body: JSON.stringify({ chat_id: chatId }),
     })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Failed to set current chat');
+        .then(response => response.json())
+        .then(data => {
+            if (data.message) {
+                if (callback) callback();
+            } else {
+                console.error('Failed to set current chat:', data.error);
             }
         })
         .catch(error => console.error('Error setting current chat:', error));
