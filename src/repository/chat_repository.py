@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
 from ..models.models import Chat, Message  # Assuming models.py contains our ORM models
 from werkzeug.datastructures import FileStorage
-from src.utils.cache_config import cache
+from src.utils.cache_config import cache, generate_chat_history_cache_key, generate_user_chat_cache_key
 from flask_login import current_user
 
 
@@ -24,6 +24,7 @@ def start_chat(db: Session, user_id: int):
         db.add(welcome_message)
 
         db.commit()  # Commit both the chat and message together as a single transaction
+        cache.delete(f"user_chats_{user_id}")
         return new_chat
     except SQLAlchemyError as e:
         db.rollback()
@@ -52,23 +53,34 @@ def send_message(
         db.add(new_message)
         db.commit()
         db.refresh(new_message)
+        cache.delete(f"chat_history_{chat_id}")
+        cache.delete(f"user_chats_{user_id}")
+
         return new_message
     except SQLAlchemyError as e:
         db.rollback()
         logging.error(f"Can't send message in chat_id {chat_id}: {str(e)}")
         return None
 
-@cache.cached(timeout=300, key_prefix=lambda: f"user_chats_{current_user.id}")
 def get_user_chats(db: Session, user_id: int):
+    cache_key = f"user_chats_{user_id}"
+    cached_chats = cache.get(cache_key)
+    if cached_chats is not None:
+        return cached_chats
     try:
         chats = db.query(Chat).filter(Chat.user_id == user_id).all()
-        return [{"id": chat.id, "title": chat.title} for chat in chats]
+        chat_data = [{"id": chat.id, "title": chat.title} for chat in chats]
+        cache.set(cache_key, chat_data, timeout=300)
+        return chat_data
     except SQLAlchemyError as e:
         logging.error(f"Can't retrieve chats for user_id {user_id}: {str(e)}")
         return None
 
-@cache.cached(timeout=300, key_prefix=lambda: f"user_hisotory_{current_user.id}")
 def get_chat_history(db: Session, chat_id: int):
+    cache_key = f"chat_history_{chat_id}"
+    cached_messages = cache.get(cache_key)
+    if cached_messages is not None:
+        return cached_messages
     try:
         messages = (
             db.query(Message)
@@ -76,6 +88,7 @@ def get_chat_history(db: Session, chat_id: int):
             .order_by(Message.timestamp)
             .all()
         )
+        cache.set(cache_key, messages, timeout=300)
         return messages
     except SQLAlchemyError as e:
         logging.error(f"Can't retrieve chat history for chat_id {chat_id}: {str(e)}")
@@ -98,6 +111,7 @@ def delete_chat(db: Session, chat_id: int) -> bool:
         if chat:
             db.delete(chat)
             db.commit()
+            cache.delete(f"chat_history_{chat_id}")
             return True
     except SQLAlchemyError as e:
         logging.error(f"Can't delete chat with chat_id {chat_id}: {str(e)}")
