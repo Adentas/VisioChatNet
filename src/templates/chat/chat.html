@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <title>ChatBot</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <link rel="stylesheet"
+            href="{{ url_for('static', filename='styles/style.css') }}">
+        <link rel="icon" href="/static/styles/img/robot.svg" type="image/svg+xml">
+        <script
+            src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script
+            src='https://use.fontawesome.com/releases/v5.0.13/js/all.js'></script>
+    </head>
+
+    <body>
+        <div id="chat-history" class="sidebar">
+            <!-- Within the chat-history sidebar -->
+            <ul class="list-unstyled text-left">
+                <!-- Chat list items will be added here dynamically via JavaScript -->
+            </ul>
+        </div>
+
+        <section class="msger">
+            <header class="msger-header">
+                <div class="msger-header-title">💬 Chatbot</div>
+            </header>
+
+            <main class="msger-chat">
+                <div class="msg left-msg">
+                    <div class="msg-img" style="background-image: url('../static/styles/img/robot.svg')"></div>
+
+                    <div class="msg-bubble">
+                        <div class="msg-info">
+                            <div class="msg-info-name">Bot</div>
+                            <div class="msg-info-time"></div>
+                        </div>
+                        <div class="msg-text">
+                            Hi, welcome to VisioNet! Go ahead and send me your
+                            image, and I'll tell you who's in it. 😄
+                        </div>
+                    </div>
+                </div>
+                <div id="predictionResult" class="msg-text"></div>
+            </main>
+
+        <!-- Форма з кнопкою "Вихід" -->
+        <form id="fileUploadForm" class="msger-inputarea" method="post" enctype="multipart/form-data">
+            <input type="file" id="imageInput" name="file" accept="image/*" style="display:none">
+            <label for="imageInput" class="msger-send-btn">Upload Image</label>
+            <!-- Кнопка "back" у формі -->
+            <button type="button" id="backBtnForm" class="back-btn-form" onclick="window.location.href='/'">Back</button>
+        </form>
+    </section>
+
+        <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    </body>
+
+</html>

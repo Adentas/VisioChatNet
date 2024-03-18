@@ -153,6 +153,3 @@ dmypy.json
 cython_debug/
 
 .idea/
-
-cifar_10_report.ipynb
-./cifar_10_report.ipynb

@@ -1,51 +1,52 @@
-from flask import Flask, request, jsonify, render_template
-from PIL import Image
-import numpy as np
-from tensorflow.keras.models import load_model
+import os
 
-app = Flask(__name__)
+from sqlalchemy import text
+from src.database.db import SessionLocal
+from src.routes.auth_routes import auth_bp
+from src.models.models import User
+from src.routes.predict_routes import predict_bp
+from src.routes.history_routes import history_bp
+from src.utils.decorators import check_is_confirmed
+from src.utils.cache_config import cache
+from src import app
 
-model = load_model('./ai/CIFAR_10.hdf5')
+from flask import Flask, jsonify, render_template
+from flask_login import LoginManager, current_user
 
-def preprocess_image(uploaded_file):
-    img = Image.open(uploaded_file)
-    img = img.resize((32, 32))
-    img_array = np.array(img)
-    img_array = img_array / 255.0
-    img_array = np.expand_dims(img_array, axis=0)
-    return img_array
+app.secret_key = os.getenv("SECRET_KEY")
+cache.init_app(app)
+login_manager = LoginManager(app)
+login_manager.login_message = ''
+login_manager.login_view = "auth.login"
+app.register_blueprint(auth_bp, url_prefix="/auth")
+app.register_blueprint(history_bp, url_prefix="/history")
+app.register_blueprint(predict_bp, url_prefix='/predict')
 
 
-@app.route('/upload_predict', methods=['POST', 'GET'])
-def upload_predict():
-    if request.method == 'POST':
-        uploaded_file = request.files.get('file')
-        if uploaded_file is not None:
-            # Обробка зображення та отримання передбачень від моделі
-            processed_image = preprocess_image(uploaded_file)
-            prediction = model.predict(processed_image)[0]
+@login_manager.user_loader
+def load_user(user_id):
+    db = SessionLocal()
+    return db.query(User).get(int(user_id))
 
-            # Отримання індексів та ймовірностей топ-3 класів
-            top3_indices = np.argsort(prediction)[-3:][::-1]
-            top3_probabilities = prediction[top3_indices]
 
-            # Назви класів
-            classes = ['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']
+@app.route("/")
+@cache.cached(timeout=300, key_prefix='home_page')
+def home():
+    return render_template("home/home.html")
 
-            # Додаємо найбільш вірогідний клас з його ймовірністю
-            most_likely_class_index = top3_indices[0]
-            most_likely_class_probability = top3_probabilities[0] * 100
-            response_message = f"I think it's a - {classes[most_likely_class_index]} with a probability {most_likely_class_probability:.2f}%.\n\n"
 
-            # Додатково виводимо інші класи та їх ймовірності
-            response_message += "Also, I have other options:\n"
-            for i, index in enumerate(top3_indices[1:], start=1):  # Пропускаємо найбільш вірогідний клас
-                class_probability = top3_probabilities[i] * 100
-                response_message += f"{i}: {classes[index]} with a probability {class_probability:.2f}%\n"
+@app.route("/healthchecker")
+def healthchecker():
+    try:
+        db = SessionLocal()
+        result = db.execute(text("SELECT 1")).fetchone()
+        db.close()
+        if result is None:
+            return jsonify({"detail": "Database is not configured correctly"}), 500
+        return jsonify({"message": "Welcome to Flask! Database connected correctly"})
+    except Exception as e:
+        return jsonify({"detail": f"Error connecting to the database: {str(e)}"}), 500
 
-            return jsonify({'result': response_message})
-        
-    return render_template('base.html')
 
-if __name__ == '__main__':
-    app.run(debug=True, host='127.0.0.1', port=5002)
+if __name__ == "__main__":
+    app.run(debug=True, host="127.0.0.1", port=5001)

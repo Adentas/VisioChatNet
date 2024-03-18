@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login</title>
+  <link rel="stylesheet" href="/static/styles/home.css">
+  <link rel="icon" href="/static/styles/img/robot.svg" type="image/svg+xml">
+</head>
+<body>
+
+<div class="page">
+    <header class="navigation-container">
+        <div class="top-bar">
+          <nav class="menu-options" id="navigation">
+            <img loading="lazy" src="https://cdn.builder.io/api/v1/image/assets/TEMP/237d2afd3c4ae9419fa7a21ef7abd7e5534ce965d8365a6764fe1fd38dc4ec2f?apiKey=b26021675ada455fb198954b077b3b88&" class="brand-logo" id="home-logo" style="cursor: pointer;"/>
+            <a href="/" class="Home" onclick="window.location.href='/'">Home</a>
+            <div class="Contacts" onclick="scrollToContacts()">Contacts</div>
+          </nav>
+          <nav class="sign-options">
+            <a href="#" class="Sign-Up" onclick="openSignupModal()">Sign Up</a> <!-- Посилання на сторінку реєстрації -->
+            <!-- <a href="login.html" class="Login">Login</a> Посилання на сторінку входу -->
+          </nav>
+        </div>
+        <div class="bottom-divider"></div>
+      </header>
+
+  <section class="content-section with-shadow">
+    <div class="row">
+      <article class="highlight-section Sign">
+        <!-- Форма входу -->
+        <h2 class="section-title">Login</h2>
+
+         {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+              <div class="flash-messages">
+                {% for category, message in messages %}
+                  <div class="{{ category }}">{{ message }}</div>
+                {% endfor %}
+              </div>
+            {% endif %}
+          {% endwith %}
+
+        <form action="/auth/login" method="POST" class="login-form">
+          <input type="username" name="username" placeholder="Username" required>
+          <input type="password" name="password" placeholder="Password" required>
+          <button type="submit" class="cta-button Login">Login</button>
+        </form>
+      </article>
+    </div>
+  </section>
+</div>
+
+<footer class="footer-container" id="footer">
+    <div class="footer-content">
+      <section class="brand-section">
+        <h2 class="brand-name">VISIOCHATNET</h2>
+        <nav class="navigation">
+          <div class="nav-item" onclick="scrollToTop()">Home</div>
+          <div class="Contacts" onclick="scrollToContacts()">Contacts</div>
+        </nav>
+      </section>
+      <section class="collaborate-section">
+        <h2 class="collaborate-call">Looking to Collaborate 🤝</h2>
+        <div class="github-links">
+          <div>
+            <a href="https://github.com/Adentas" class="github-account">GitHub: Illya Hryhoriev (Team Lead)</a><br>
+            <a href="https://github.com/paukdv" class="github-account">GitHub: Dmytro Paukov (Scrum Master)</a>
+          </div>
+          <div>
+            <a href="https://github.com/leegosx" class="github-account">GitHub: Dmytro Klymenko (Dev)</a><br>
+            <a href="https://github.com/UkrainianEagleOwl" class="github-account">GitHub: Dmytro Filin (Dev)</a>
+          </div>
+        </div>
+      </section>
+    </div>
+</footer>
+
+<!-- Модальне вікно -->
+<div id="signupModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeSignupModal()">&times;</span>
+    <!-- Форма реєстрації -->
+    <h2 class="section-title">Sign Up</h2>
+    <form action="/auth/register" method="POST" class="registration-form">
+      <input type="text" name="username" placeholder="Username" required>
+      <input type="email" name="email" placeholder="Email" required>
+      <input type="password" name="password" placeholder="Password" required>
+      <button type="submit" class="cta-button signup-button">Sign Up</button>
+    </form>
+  </div>
+</div>
+
+<script src="/static/js/script.js"></script>
+
+</body>
+</html>

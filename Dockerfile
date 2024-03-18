@@ -16,9 +16,4 @@ COPY . .
 
 EXPOSE 8000
 
-# Command to run the application
-CMD ["streamlit", "run", "main.py", "--server.port", "8501"]
-
-
-# # Run our application inside the container
-# CMD ["streamlit", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["flask", "--app",  "src/app.py", "run", "--host=0.0.0.0"]
