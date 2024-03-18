@@ -20,6 +20,7 @@ flask-login = "^0.6.3"
 flask-mail = "^0.9.1"
 numpy = "^1.26.4"
 tensorflow = "^2.16.1"
+flask-cache = "^0.13.1"
 
 
 [build-system]
