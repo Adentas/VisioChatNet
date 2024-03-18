@@ -66,3 +66,4 @@ def get_predictions(image):
             )
 
         return response_message
+    
