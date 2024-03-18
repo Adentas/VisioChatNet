@@ -4,11 +4,14 @@ from src.model_loader import get_model
 from src.repository.chat_repository import send_message
 from src.database.db import get_db
 from src.utils.preproccss_image import preprocess_image
+from src.utils.cache_config import cache
+
 from flask import session
 
 from flask import Blueprint, request, jsonify, render_template
 from flask_login import current_user
 
+@cache.cached(timeout=50, key_prefix='get_predictions')
 def get_predictions(image):
     model = get_model()
     if image is not None:

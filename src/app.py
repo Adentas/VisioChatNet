@@ -7,12 +7,14 @@ from src.models.models import User
 from src.routes.predict_routes import predict_bp
 from src.routes.history_routes import history_bp
 from src.utils.decorators import check_is_confirmed
+from src.utils.cache_config import cache
 from src import app
 
 from flask import Flask, jsonify, render_template
 from flask_login import LoginManager, current_user
 
 app.secret_key = os.getenv("SECRET_KEY")
+cache.init_app(app)
 login_manager = LoginManager(app)
 login_manager.login_view = "auth.login"
 app.register_blueprint(auth_bp, url_prefix="/auth")
@@ -27,6 +29,7 @@ def load_user(user_id):
 
 
 @app.route("/")
+@cache.cached(timeout=300, key_prefix='home_page')
 def home():
     return render_template("home/home.html")
 

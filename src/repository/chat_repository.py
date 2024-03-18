@@ -4,6 +4,8 @@ from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
 from ..models.models import Chat, Message  # Assuming models.py contains our ORM models
 from werkzeug.datastructures import FileStorage
+from src.utils.cache_config import cache
+from flask_login import current_user
 
 
 def start_chat(db: Session, user_id: int):
@@ -56,7 +58,7 @@ def send_message(
         logging.error(f"Can't send message in chat_id {chat_id}: {str(e)}")
         return None
 
-
+@cache.cached(timeout=300, key_prefix=lambda: f"user_chats_{current_user.id}")
 def get_user_chats(db: Session, user_id: int):
     try:
         chats = db.query(Chat).filter(Chat.user_id == user_id).all()
@@ -65,7 +67,7 @@ def get_user_chats(db: Session, user_id: int):
         logging.error(f"Can't retrieve chats for user_id {user_id}: {str(e)}")
         return None
 
-
+@cache.cached(timeout=300, key_prefix=lambda: f"user_hisotory_{current_user.id}")
 def get_chat_history(db: Session, chat_id: int):
     try:
         messages = (
