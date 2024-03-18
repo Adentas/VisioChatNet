@@ -154,6 +154,12 @@ object-fit: contain;
 width: 64px; /* Загальний розмір для обох логотипів */
 }
 
+.brand-logo:hover {
+  filter: saturate(200%);
+}
+
+
+
 .promo-image {
 width: 362px; /* Розмір промо логотипу */
 }

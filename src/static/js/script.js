@@ -476,3 +476,8 @@ function updateNavigationMenu() {
 
 // Виклик функції для оновлення навігаційного меню при завантаженні сторінки
 updateNavigationMenu();
+
+// Додаємо обробник кліку до зображення
+document.getElementById('home-logo').addEventListener('click', function() {
+    window.location.href = '/'; // Перенаправляємо на домашню сторінку при кліку
+});
