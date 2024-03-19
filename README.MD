@@ -6,27 +6,27 @@ Welcome to Visiochatnet – an innovative chat application created by our team. 
 
 Here are charts demonstrating the training process of our model and the accuracy achieved:
 
-![Графік точності](src/ai/train_los_acc.png)
-![Графік втрат](src/ai/train_val_los.png)
-Більше інформації, такі як логи і репорт, ви можете знайти за наступним шляхом src/ai/. 
+![Accuracy Chart](src/ai/train_los_acc.png)
+![Loss Chart](src/ai/train_val_los.png)
+For more information, such as logs and reports, you can find in the following path src/ai/.
 
 ## Docker Hub
 
-Зацікавлених у використанні нашого застосунку можна звернутись до Docker Hub:
+For those interested in using our application, please refer to Docker Hub:
 
-[Visiochatnet на Docker Hub](https://hub.docker.com/repository/docker/leegosq/visiochatnet-web/general)
+[Visiochatnet on Docker Hub](https://hub.docker.com/repository/docker/leegosq/visiochatnet-web/general)
 
-## Наш застосунок у дії
+## Our Application in Action
 
-Погляньте на інтерфейс нашого застосунку:
+Take a look at the interface of our application:
 
-![Фото інтерфейсу](src/static/styles/img/example.png)
+![Interface Photo](src/static/styles/img/example.png)
 
-Для доступу та користування застосунком, будь ласка, відвідайте [Visiochatnet](https://visiochatnet.fly.dev/).
+For access and use of the application, please visit [Visiochatnet](https://visiochatnet.fly.dev/).
 
-## Зв'язок з нами
+## Contact Us
 
-Маєте питання або пропозиції? Не соромтеся зв'язатися з нами:
+Have questions or suggestions? Do not hesitate to contact us:
 
 - Illya Hryhoriev [Team Leader] - [GitHub](https://github.com/Adentas)
 - Dmytro Paukov [Scrum master] - [GitHub](https://github.com/paukdv)
