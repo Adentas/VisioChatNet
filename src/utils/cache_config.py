@@ -1,9 +1,18 @@
 from flask_caching import Cache
+import os
 
-cache = Cache(config = {
-    'CACHE_TYPE': 'redis',
-    'CACHE_DEFAULT_TIMEOUT': 300, 
-    'CACHE_REDIS_URL': 'redis://redis:6379/0',
+redis_host = os.getenv("REDIS_HOST", "localhost") 
+redis_port = os.getenv("REDIS_PORT", "6379") 
+redis_password = os.getenv("REDIS_PASSWORD", "") 
+
+redis_url = f"redis://:{redis_password}@{redis_host}:{redis_port}/0"
+
+# Configure the cache with the dynamic Redis URL
+cache = Cache(
+    config={
+        "CACHE_TYPE": "redis",
+        "CACHE_DEFAULT_TIMEOUT": 300,
+        "CACHE_REDIS_URL": redis_url,
     }
 )
 

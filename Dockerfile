@@ -14,6 +14,6 @@ RUN poetry config virtualenvs.create false && poetry install --only main
 
 COPY . .
 
-EXPOSE 8000
+EXPOSE 5000
 
-CMD ["flask", "--app",  "src/app.py", "run", "--host=0.0.0.0"]
+CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:5000", "src.app:app"]
