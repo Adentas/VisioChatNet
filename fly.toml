@@ -1,0 +1,41 @@
+# fly.toml app configuration file generated for visiochatnet on 2024-03-19T19:48:44+01:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'visiochatnet'
+primary_region = 'waw'
+
+[build]
+  image = 'leegosq/visiochatnet-web:latest'
+
+[env]
+  MAIL_DEFAULT_SENDER = 'visionet24@gmail.com'
+  MAIL_PASSWORD = 'yrmopxcyqgwzjpwv'
+  MAIL_PORT = '465'
+  MAIL_SERVER = 'smtp.gmail.com'
+  MAIL_USERNAME = 'visionet24@gmail.com'
+  POSTGRES_DB = 'visionet'
+  POSTGRES_HOST = 'ep-empty-paper-a2nho54w-pooler.eu-central-1.aws.neon.tech'
+  POSTGRES_PASSWORD = '7uvYAaMdP2Ri'
+  POSTGRES_PORT = '5432'
+  POSTGRES_USER = 'visionet_owner'
+  REDIS_HOST = '195.201.150.230'
+  REDIS_PASSWORD = '567234'
+  REDIS_PORT = '6379'
+  SECRET_KEY = 'fdkjshfhjsdfdskfdsfdcbsjdkfdsdf'
+  SECURITY_PASSWORD_SALT = 'fkslkfsdlkfnsdfnsfd'
+  SQLALCHEMY_DATABASE_URL = 'postgresql+psycopg2://visionet_owner:7uvYAaMdP2Ri@ep-empty-paper-a2nho54w.eu-central-1.aws.neon.tech/visionet?sslmode=require'
+
+[http_service]
+  internal_port = 5000
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ['app']
+
+[[vm]]
+  memory = '2gb'
+  cpu_kind = 'shared'
+  cpus = 4
