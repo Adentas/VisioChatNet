@@ -6,12 +6,6 @@ from dotenv import load_dotenv
 load_dotenv()
 
 class Config:
-    SQLALCHEMY_DATABASE_URI: str = (
-        f"postgresql://{os.environ.get('POSTGRES_USER')}:{os.environ.get('POSTGRES_PASSWORD')}@"
-        f"{os.environ.get('POSTGRES_HOST')}:{os.environ.get('POSTGRES_PORT')}/"
-        f"{os.environ.get('POSTGRES_DB')}?sslmode=require"
-    )
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
     postgres_user = os.environ.get("POSTGRES_USER")
     postgres_password = os.environ.get("POSTGRES_PASSWORD")
     postgres_host = os.environ.get("POSTGRES_HOST")
@@ -25,6 +19,9 @@ class Config:
     MAIL_DEFAULT_SENDER = os.environ.get("MAIL_DEFAULT_SENDER")
     MAIL_PORT = 465
     MAIL_USE_SSL = True
+
+    SQLALCHEMY_DATABASE_URI: str = f"postgresql+psycopg2://{postgres_user}:{postgres_password}@{postgres_host}:{postgres_port}/{postgres_db}?sslmode=require"
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 
 settings = Config()

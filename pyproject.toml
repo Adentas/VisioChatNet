@@ -23,6 +23,7 @@ tensorflow = "^2.16.1"
 flask-cache = "^0.13.1"
 flask-caching = "^2.1.0"
 redis = "^5.0.3"
+gunicorn = "^21.2.0"
 
 
 [build-system]
