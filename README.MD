@@ -34,7 +34,7 @@ Ensure you have Docker installed on your system to simplify the setup process. V
 
 1. Clone the Visiochatnet repository:
    ```
-   git clone https://github.com/yourrepository/visiochatnet.git
+   git clone https://github.com/Adentas/visiochatnet.git
    ```
 2. Navigate to the project directory:
    ```
