@@ -5,7 +5,7 @@ Welcome to Visiochatnet – an innovative chat application created by our team. 
 ## Features at a Glance
 
 - **User Registration**: Easy and secure sign-up process with email verification to get you started in no time.
-- **Chat Management**: Sophisticated chat management system allowing for private conversations, group chats, and chat history.
+- **Chat Management**: Sophisticated chat management system allowing for private conversations with bot and chat history.
 - **Email Verification**: Enhanced security through a robust email verification system to prevent unauthorized access.
 - **Caching**: Speed up your chat experience with our efficient caching system, reducing load times and improving performance.
 
